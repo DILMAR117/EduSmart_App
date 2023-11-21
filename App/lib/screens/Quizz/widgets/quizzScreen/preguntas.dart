@@ -12,6 +12,7 @@ class PreguntasScreen extends StatefulWidget {
   final ValueChanged<bool> onSelect;
   final ValueChanged<String> onSelectRespuesta;
   final int id_alumno;
+  final int idMateria;
   const PreguntasScreen({
     Key? key,
     required this.preguntas,
@@ -19,7 +20,8 @@ class PreguntasScreen extends StatefulWidget {
     required this.pageController,
     required this.onSelect,
     required this.onSelectRespuesta,
-    required this.id_alumno
+    required this.id_alumno,
+    required this.idMateria
   }): super(key: key);
   @override
   _PreguntasScreenState createState() => _PreguntasScreenState();
@@ -38,7 +40,7 @@ class _PreguntasScreenState extends State<PreguntasScreen> {
   @override
   void initState() {
     super.initState();
-    _conexion.fetchPregunta(widget.id_alumno);
+    _conexion.fetchPregunta(widget.id_alumno, widget.idMateria);
     _startTimer();
     //Dividimos el tiempo de respuesta en horas, minutos y segundos
     tiempo_respuesta = widget.preguntas[widget.index]["tiempo_respuesta"];

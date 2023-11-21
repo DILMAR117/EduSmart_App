@@ -59,10 +59,8 @@ class _PerfilEdiState extends State<PerfilEdit> {
       _alertas = true;
     });
     // Esperar unos segundos antes de redirigir al usuario
-    await Future.delayed(const Duration(seconds: 2));
     // Validación exitosa, enviar la solicitud PUT para actualizar los datos del alumno.
-    // ignore: use_build_context_synchronously
-    _conexion.actualizarDatosAlumno(
+    await _conexion.actualizarDatosAlumno(
         _telefonoController.text,
         _correoController.text,
         _nombreController.text,
@@ -74,10 +72,13 @@ class _PerfilEdiState extends State<PerfilEdit> {
           _conexion.uploadImage(_image!, matricula);
         }else{
          print("No se selecciono ni una foto");
-        }      
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop();
+        }
+        //Ocultamos el indicador
+      setState(() {
+        _alertas = false;
+      });
   }
+
   Future<void> _selectAndUploadPhoto() async {
     final picker = ImagePicker();
     final pickedFile = await showModalBottomSheet<PickedFile>(
@@ -141,12 +142,13 @@ class _PerfilEdiState extends State<PerfilEdit> {
             : Container(
                 height: double.infinity,
                 decoration: const BoxDecoration(color: azul_oscuro),
-                padding: const EdgeInsets.fromLTRB(16, 100, 25.0, 5),
+                padding: const EdgeInsets.all(40.0),
                 child: SingleChildScrollView(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 9.0),
+                      const SizedBox(height: 70.0),
                       _conexion.userData == null
                           ? Visibility(
                               visible:
@@ -165,17 +167,22 @@ class _PerfilEdiState extends State<PerfilEdit> {
                               child: Form(
                                 key: _formKey,
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,  
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     _image == null
-                                    ? CircleAvatar(
+                                    ? Center(child: CircleAvatar(
                                       radius: 60.0,
                                       backgroundImage: NetworkImage(
                                           'http://${_conexion.ip}/get-image/${_conexion.userData!['foto']}'), // Replace with your image path
+                                    )
                                     ):
-                                    CircleAvatar(
+                                    Center(
+                                      child: CircleAvatar(
                                       radius:60.0 ,
                                       backgroundImage: FileImage(_image!),
+                                    )
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(
@@ -194,12 +201,9 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 10.0),
+                                    const SizedBox(height: 5.0),
                                     //Campo Nombre
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(5, 0, 270, 0),
-                                      child: Text(
+                                    const Text(
                                         "Nombre",
                                         style: TextStyle(
                                           color: blanco,
@@ -207,10 +211,8 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                         
                                         ),
                                       ),
-                                    ),
                                     Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          30, 0, 30, 0),
+                                      padding: const EdgeInsets.only(top: 8, bottom: 16),
                                       child: TextFormField(
                                           style: const TextStyle(color: blanco),
                                           controller: _nombreController,
@@ -231,20 +233,15 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                           )),
                                     ),
                                     //Campo App
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(5, 20, 215, 0),
-                                      child: Text(
+                                    const Text(
                                         "Apellido Paterno",
                                         style: TextStyle(
                                           color: blanco,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ),
                                     Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          30, 0, 30, 0),
+                                      padding: const EdgeInsets.only(top: 8, bottom: 16),
                                       child: TextFormField(
                                           controller: _appController,
                                           style: const TextStyle(color: blanco),
@@ -265,20 +262,16 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                           )),
                                     ),
                                     //Campo Apm
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(5, 20, 215, 0),
-                                      child: Text(
+                                     const Text(
                                         "Apellido Materno",
                                         style: TextStyle(
                                           color: blanco,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ),
+                                    
                                     Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          30, 0, 30, 0),
+                                      padding: const EdgeInsets.only(top: 8, bottom: 16),
                                       child: TextFormField(
                                           controller: _apmController,
                                           style: const TextStyle(color: blanco),
@@ -299,19 +292,15 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                           )),
                                     ),
                                     //Campo email
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(5, 20, 282, 0),
-                                      child: Text(
-                                        "Email",
+                                    const Text(
+                                        "Correo electrónico",
                                         style: TextStyle(
                                             color: blanco,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                    ),
+                                    
                                     Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            30, 0, 30, 0),
+                                        padding: const EdgeInsets.only(top: 8, bottom: 16),
                                         child: TextFormField(
                                             cursorColor: blanco,
                                             controller: _correoController,
@@ -343,19 +332,14 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                                           color: blanco)),
                                             ))),
                                     //Campo Teléfono
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(5, 20, 259, 0),
-                                      child: Text(
+                                    const Text(
                                         "Teléfono",
                                         style: TextStyle(
                                             color: blanco,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                    ),
                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            30, 0, 30, 0),
+                                        padding: const EdgeInsets.only(top: 8, bottom: 16),
                                         child: TextFormField(
                                             cursorColor: blanco,
                                             maxLength: 10,
@@ -385,8 +369,6 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                                 color: blanco
                                               )
                                             ))),
-
-                                    const SizedBox(height: 20.0),
                                     Container(
                                         padding: const EdgeInsets.only(
                                             top: 30, left: 50, right: 50),
@@ -407,7 +389,7 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                             onPressed: () {
                                               if (_formKey.currentState!
                                                   .validate()) {
-                                                _alerta();
+                                                  _alerta();
                                               }
                                             },
                                             child: const Center(

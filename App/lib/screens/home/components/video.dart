@@ -1,9 +1,10 @@
+import 'package:edusmart/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import '../../../../api/conexion.dart';
-import '../../../../constants.dart';
+import '../../../api/conexion.dart';
+import '../../../constants.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import '../../../../utils/transition.dart';
-import '../../../../views/perfil.dart';
+import '../../../utils/transition.dart';
+import '../../../views/perfil.dart';
 import '../../appbar/appbar_widget.dart';
 
 class VerVideo extends StatefulWidget {
@@ -31,7 +32,7 @@ class _VerVideo extends State<VerVideo> {
     _txtController.text = widget.filePath;
     _conexion.getalumnoData();
     _getVideoId();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
       });
@@ -163,7 +164,7 @@ class _VideoScreenState extends State<VideoScreen> {
     super.initState();
     _conexion.fetchVideo(widget.id_subtema);
     _conexion.getalumnoData();
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
       });
@@ -227,8 +228,9 @@ class _VideoScreenState extends State<VideoScreen> {
                                     Container(
                                       width: 400,
                                       height: 50,
-                                      child: const Text(
+                                      child: Text(
                                           "No hay videos disponibles",
+                                          style: AppTextStyles.bodyLightGrey15,
                                           textAlign: TextAlign.center),
                                     ),
                                   ],

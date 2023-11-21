@@ -4,65 +4,32 @@ import 'package:flutter/material.dart';
 import '../../../api/conexion.dart';
 import '../../../model/menu.dart';
 import '../../../utils/rive_utils.dart';
-import '../../../views/ranking.dart';
-import '../../Quizz/quizz_page.dart';
 import 'info_card.dart';
 import 'side_menu.dart';
-class SideBar extends StatefulWidget {
-  const SideBar({
-    super.key, 
-    required this.idmateria,
-    required this.tituloMateria
+class SideBarHome extends StatefulWidget {
+  const SideBarHome({
+    super.key,
   });
-  final int idmateria;
-  final String tituloMateria;
-
 
   @override
-  State<SideBar> createState() => _SideBarState();
+  State<SideBarHome> createState() => _SideBarHomeState();
 }
-class _SideBarState extends State<SideBar> {
+class _SideBarHomeState extends State<SideBarHome> {
   bool _isLoggingOut = false;
   bool isLoading= true;
   final Conexion _conexion = Conexion();
   Menu selectedSideMenu= home[0];
-  bool isEnabled = true;
-  int idalumno =0;
-  int idExamen =0;
-  
+
   @override
   void initState(){
-    _conexion.fetchExamenActivo(widget.idmateria);
     super.initState();
     _conexion.getalumnoData();
-    toggleButton();
-
-    Future.delayed(const Duration(milliseconds: 900), () {
+    Future.delayed(const Duration(seconds: 1), () {
         setState(() {
          isLoading = false;
-         idalumno = _conexion.userData!['id_alumno'];
-         //Le pasamos el valor coparando el estado en el que se encuetra, para habilitar el bóton de exámen
-         isEnabled = (_conexion.activo[0]['activo'] == 'true') ? true : false;
-         Future.delayed(const Duration(milliseconds: 1000),(){
-           _conexion.fetchIdExamen(widget.idmateria, idalumno);
-           Future.delayed(const Duration(milliseconds: 1100),(){
-           //Le pasamos el id del examen
-           setState(() {
-              idExamen = _conexion.idExamen[0]['id_examen'];
-           });
-           
-         });
-         });
         });
     });
     
-  }
-
-  //Función para verificar el estado del botón examen
-   void toggleButton() {
-    setState(() {
-      isEnabled = !isEnabled;
-    });
   }
 
   // Función para simular el cierre de sesión
@@ -117,45 +84,7 @@ class _SideBarState extends State<SideBar> {
                   foto: '${_conexion.userData!['foto']}',
                 ),
               ),
-              
-              const Padding(
-                padding: EdgeInsets.only(left: 24, top: 10, bottom: 0),
-              ),
-              Center(
-                 child:Container(
-                 padding: EdgeInsets.zero,
-                 height: 40.0,
-                 width: 200,
-                  child: ElevatedButton(
-                    onPressed: isEnabled ? () {
-                        final SizeTransition5 _transition =SizeTransition5(QuizzPage(idalumno: idalumno, idmateria: widget.idmateria));
-                        Navigator.push(context, _transition);
-                    } : null,
-                    child:  Text('Examen',
-                        style:  TextStyle(color: blanco, fontSize: 19),
-                    ),
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(12.0), // Borde redondeado
-                        ),
-                      ),
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.disabled)) {
-                            return Color(0xFF818181); // Color cuando el botón está deshabilitado
-                          }
-                          return Color(0xFFFA744B); // Color cuando el botón está habilitado
-                        },
-                      ),
-                    )
-                  ),
-                )
-              ),
-              const Padding(
-                padding: EdgeInsets.only(left: 24, top: 30, bottom: 0),
-              ),
+              const SizedBox(height: 20),
               //Se muestra la opción de home para navegar a la ruta home
                ...home
                   .map((menu) => SideMenu(
@@ -213,38 +142,7 @@ class _SideBarState extends State<SideBar> {
                         },
                       ))
                   .toList(),
-                  ...ranking
-                  .map((menu) => SideMenu(
-                  menu: menu,
-                  selectedMenu: selectedSideMenu,
-                   press: () {
-                          RiveUtils.chnageSMIBoolState(menu.rive.status!);
-                          setState(() {
-                            //final String titulo = tema[menu.index].text;
-                            selectedSideMenu = menu;
-                            final SizeTransition5 transition5 = SizeTransition5(Ranking(idMateria: widget.idmateria,
-                                idAlumno: idalumno,
-                                materia: widget.tituloMateria,
-                                idExamen: idExamen
-                                ));
-                            menu.idmateria(widget.idmateria);
-                            Future.delayed(const Duration(seconds: 2),(){
-                              //Navigator.pushNamed(context, menu.ruta);
-                             Navigator.push(context, transition5);
-                             //Despúes de naegar restablecemos el idicador de nuevo a home
-                             setState(() {
-                                  selectedSideMenu = home[0];
-                             });
-                            });
-                            
-                          });
-                        }, 
-                        riveOnInit: (artboard) {
-                          menu.rive.status = RiveUtils.getRiveInput(artboard,
-                              stateMachineName: menu.rive.stateMachineName);
-                        }, 
-                  )
-                   ).toList(),
+                  //Opción para cerrar sesion
                   ...menu2
                   .map((menu) => SideMenu(
                         menu: menu,

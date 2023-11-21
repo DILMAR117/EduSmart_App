@@ -25,6 +25,7 @@ class _ProfileAppState extends State<ProfileApp> {
     Future.delayed(Duration(seconds: 1), () {
     setState(() {
       isLoading = false;
+      _conexion.getalumnoData();
     });
   });
     

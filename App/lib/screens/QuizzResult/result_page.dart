@@ -43,7 +43,7 @@ class _ResultPageState extends State<ResultPage>{
   @override
   void initState() {
     super.initState();
-    _conexion.fetchRespuestas(widget.id_alumno, context);
+    _conexion.fetchRespuestas(widget.id_alumno, widget.id_materia, context);
  
 
     Future.delayed(const Duration(seconds: 2),(){
@@ -161,7 +161,7 @@ class _ResultPageState extends State<ResultPage>{
                   ],
                 ),
                const SizedBox(height: 24),
-                Row(
+               /* Row(
                   children: [
                     Expanded(
                       child: Padding(
@@ -169,13 +169,13 @@ class _ResultPageState extends State<ResultPage>{
                         child: NextButtonWidget.transparent(
                           label: "Volver a inicio",
                           onTap: () {
-                            Navigator.pop(context);
+                           Navigator.pop(context);
                           },
                         ),
                       ),
                     ),
                   ],
-                )
+                )*/
               ],
             )
           ],

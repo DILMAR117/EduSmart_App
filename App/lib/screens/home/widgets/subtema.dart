@@ -24,7 +24,7 @@ class _SubtemaScreenState extends State<SubtemaScreen> {
   void initState() {
     super.initState();
     _conexion.fetchSubtemas(widget.id_tema);
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
       });

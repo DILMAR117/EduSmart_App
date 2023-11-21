@@ -8,9 +8,16 @@ import 'components/menu_btn.dart';
 import 'components/side_bar.dart';
 
 class SubtemaMenu extends StatefulWidget {
-  const SubtemaMenu({super.key, required this.titulo, required this.id_tema});
+  const SubtemaMenu({super.key, required this.titulo,
+   required this.id_tema,
+   required this.idMateria,
+   required this.materia,
+   });
   final String titulo;
   final int id_tema;
+  final int idMateria;
+  final String materia;
+
   @override
   State<SubtemaMenu> createState() => _SubtemaMenuState();
 }
@@ -18,7 +25,7 @@ class SubtemaMenu extends StatefulWidget {
 class _SubtemaMenuState extends State<SubtemaMenu>
     with SingleTickerProviderStateMixin {
   bool isSideBarOpen = false;
-  Menu selectedSideMenu = sidebarMenus[1];
+  Menu selectedSideMenu = sidebarMenus[0];
   late SMIBool isMenuOpenInput;
 
   late AnimationController _animationController;
@@ -39,7 +46,7 @@ class _SubtemaMenuState extends State<SubtemaMenu>
     animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
         parent: _animationController, curve: Curves.fastOutSlowIn));
     super.initState();
-    sidebarMenus[2];
+    sidebarMenus[0];
   }
  
 
@@ -64,7 +71,7 @@ class _SubtemaMenuState extends State<SubtemaMenu>
             curve: Curves.fastOutSlowIn,
             left: isSideBarOpen ? 0 : -288,
             top: 0,
-            child: const SideBar(),
+            child:  SideBar(idmateria: widget.idMateria, tituloMateria: widget.materia),
           ),
           Transform(
             alignment: Alignment.center,

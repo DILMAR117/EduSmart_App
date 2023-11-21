@@ -11,8 +11,10 @@ import 'widgets/quizzScreen/preguntas.dart';
 
 class QuizzPage extends StatefulWidget {
   int idalumno;
+  final int idmateria;
    QuizzPage({
     required this.idalumno,
+    required this.idmateria,
     Key? key,
   }) : super(key: key);
 
@@ -40,7 +42,7 @@ class QuizzPageState extends State<QuizzPage> {
     });
 
     super.initState();
-    _conexion.fetchPregunta(widget.idalumno);
+    _conexion.fetchPregunta(widget.idalumno, widget.idmateria);
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _isLoading = false;
@@ -57,13 +59,14 @@ class QuizzPageState extends State<QuizzPage> {
       ),
       curve: Curves.linear,
     );
+  }
+  void guardarRespuesta(){
     if(respuesta != null){
-        _conexion.guardarRespuestas(id_pregunta!, _idalumno, _id_equipo, "$respuesta", context);
+       _conexion.guardarRespuestas(id_pregunta!, _idalumno, _id_equipo, "$respuesta", context);
         respuesta = null;
-    }else{
-      _conexion.guardarRespuestas(id_pregunta!,_idalumno, _id_equipo, "No se selecciono respuesta", context);
+    } else {
+         _conexion.guardarRespuestas(id_pregunta!,_idalumno, _id_equipo, "No se selecciono respuesta", context);
     }
-    
   }
  //Refrescar el estado para volver a mostrar los datos
   Future<void> _refreshData() async {
@@ -73,7 +76,7 @@ class QuizzPageState extends State<QuizzPage> {
     });
     //Esperamos a una respuesta de las preguntas
     await Future.delayed(const Duration(seconds: 3),() {
-        _conexion.fetchPregunta(_idalumno);
+        _conexion.fetchPregunta(_idalumno, widget.idmateria);
     });
     //Ocultar indicador de carga
     Future.delayed(const Duration(seconds: 2), () {
@@ -150,7 +153,7 @@ class QuizzPageState extends State<QuizzPage> {
                     if (index >= _conexion.preguntas.length) {
                       return Scaffold(
                         body: Center(
-                            child: Column(
+                          child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                              Text("Ocurrio un error",
@@ -163,10 +166,11 @@ class QuizzPageState extends State<QuizzPage> {
                                   _refreshData();
                                 })
                           ],
-                        )),
+                        )
+                      ),
                       );
                     }
-                    //Mostramos la vista para las el examen
+                    //Mostramos la vista para  el examen
                     final preguntas = _conexion.preguntas[index];
                      titulo = preguntas['nombre_unidad'];
                      id_pregunta = preguntas['id_pregunta'];
@@ -181,6 +185,7 @@ class QuizzPageState extends State<QuizzPage> {
                       onSelect: onSelect,
                       onSelectRespuesta: onSelectRespuesta,
                       id_alumno: _idalumno,
+                      idMateria: widget.idmateria,
 
                     );
                   },
@@ -212,14 +217,20 @@ class QuizzPageState extends State<QuizzPage> {
                         Expanded(
                           child: NextButtonWidget.white(
                             label: 'Saltar',
-                            onTap: goToNextPage
+                            onTap: (){
+                              goToNextPage();
+                              guardarRespuesta();
+                            }
                           ),
                         ),
                         const SizedBox(width: 7),
                         Expanded(
                           child: NextButtonWidget.green(
                             label: 'Siguiente',
-                            onTap: goToNextPage
+                            onTap:(){
+                                goToNextPage();
+                                guardarRespuesta();
+                              }
                             
                           ),
                         ),
@@ -233,12 +244,7 @@ class QuizzPageState extends State<QuizzPage> {
                           child: NextButtonWidget.green(
                             label: 'Finish',
                             onTap: () {
-                              if(respuesta != null){
-                                        _conexion.guardarRespuestas(id_pregunta!, _idalumno, _id_equipo, "$respuesta", context);
-                                        respuesta = null;
-                                    }else{
-                                      _conexion.guardarRespuestas(id_pregunta!,_idalumno, _id_equipo, "No se selecciono respuesta", context);
-                                    }
+                             guardarRespuesta();
                               final SizeTransition5 sizeTransition5 =SizeTransition5(ResultPage(
                                             title: "$titulo" ,
                                             length: _conexion.preguntas.length,

@@ -9,7 +9,7 @@ import '../../../api/message.dart';
 import '../../../constants.dart';
 import '../../../utils/transition.dart';
 import '../../Menu/entry_point.dart';
-import 'reset_password.dart';
+import 'resetpassword/enviar_email.dart';
 import 'package:http/http.dart' as http;
 
 class SignInForm extends StatefulWidget {
@@ -52,6 +52,11 @@ class _SignInFormState extends State<SignInForm> {
 
     confetti = controller.findInput<bool>("Trigger explosion") as SMITrigger;
   }
+  //Funcion que valida los datos ante un caracter malisioso
+  bool validarEntrada(String entrada){
+    List<String> caracteresMaliciosos =["'", ";", "--", "/* ", "%", "=", "*", "/"];
+    return caracteresMaliciosos.any((caracter) => entrada.contains(caracter));
+  }
   //Función para el inicio de sesión
   Future<void> _login(BuildContext context) async {
     String url = 'http://${_conexion.ip}/login';
@@ -59,19 +64,18 @@ class _SignInFormState extends State<SignInForm> {
       isShowConfetti = true;
       isShowLoading = true;
     });
-
     try {
-      final response = await http.post(
-        Uri.parse(url),
-        body: jsonEncode({
-          'matricula': _matriculaController.text,
-          'contrasena': _contrasenaController.text,
-        }),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1), ()async {
         if (_formKey.currentState!.validate()) {
+
+           final response = await http.post(
+              Uri.parse(url),
+              body: jsonEncode({
+                'matricula': _matriculaController.text,
+                'contrasena': _contrasenaController.text,
+              }),
+              headers: {'Content-Type': 'application/json'},
+            );
           if (response.statusCode == 200) {
           // Éxito en la autenticación.
           success.fire();
@@ -118,7 +122,7 @@ class _SignInFormState extends State<SignInForm> {
               );
 
               //print('Credenciales incorrectas');
-            } else {
+            } else if(response.statusCode == 404) {
               // Error en el servidor.
               error.fire();
               Future.delayed(
@@ -136,6 +140,18 @@ class _SignInFormState extends State<SignInForm> {
                 },
               );
               //print('Error interno del servidor');
+            }else{
+              error.fire();
+              Future.delayed(
+                const Duration(seconds: 2),
+                () {
+                  setState(() {
+                    isShowLoading = false;
+                  });
+                  reset.fire();
+                },
+              );
+
             }
           
         }else{
@@ -194,6 +210,9 @@ class _SignInFormState extends State<SignInForm> {
                   validator: (value) {
                     if (value!.isEmpty) {
                       return "Por favor, ingrese una matricula";
+                    }if(validarEntrada(value)){
+                        return "Algun caracter ingresado es inválido";
+
                     }
                     return null;
                   },
@@ -221,6 +240,10 @@ class _SignInFormState extends State<SignInForm> {
                   validator: (value) {
                     if (value!.isEmpty) {
                       return "Por favor, ingrese una contraseña";
+                    }
+                    if(validarEntrada(value)){
+                      return "Algun caracter ingresado es inválido";
+
                     }
                     return null;
                   },

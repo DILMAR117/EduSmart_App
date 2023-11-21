@@ -5,7 +5,7 @@ import '../../constants.dart';
 import '../../model/menu.dart';
 import '../home/home_materia_page.dart';
 import 'components/menu_btn.dart';
-import 'components/side_bar.dart';
+import 'components/side_bar_Home.dart';
 
 class EntryPoint extends StatefulWidget {
   const EntryPoint({super.key});
@@ -65,7 +65,7 @@ class _EntryPointState extends State<EntryPoint>
             curve: Curves.fastOutSlowIn,
             left: isSideBarOpen ? 0 : -288,
             top: 0,
-            child: const SideBar(),
+            child: const SideBarHome(),
           ),
           Transform(
             alignment: Alignment.center,

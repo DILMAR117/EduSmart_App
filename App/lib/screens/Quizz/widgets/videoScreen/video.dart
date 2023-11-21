@@ -12,14 +12,15 @@ class VerVideoExamen extends StatefulWidget {
 }
 
 class _VerVideo extends State<VerVideoExamen> {
-  String? videoId;
+  final _txtController = TextEditingController();
+  String videoId = '';
   late final YoutubePlayerController _controller = YoutubePlayerController(
-    initialVideoId: videoId!,
+    initialVideoId: videoId,
     flags: const YoutubePlayerFlags(
       autoPlay: true,
       mute: false,
       hideControls: false,
-      controlsVisibleAtStart: true,
+      controlsVisibleAtStart: false,
       enableCaption: false,
       isLive: false,
     ),
@@ -27,12 +28,21 @@ class _VerVideo extends State<VerVideoExamen> {
 
   @override
   void initState() {
+       _txtController.text = widget.filePath;
+       _getVideoId();
+       videoId= _getVideoId().toString();
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        videoId = YoutubePlayer.convertUrlToId("${widget.filePath}");
-      });
     });
+  }
+   String? _getVideoId(){
+   if(_txtController.text.startsWith('https://www.youtu.be/')){
+     return _txtController.text.substring('https://www.youtu.be.'.length);
+   }else if(_txtController.text.startsWith('https://www.youtube.com/watch?v=')){
+     return _txtController.text.substring('https://www.youtube.com/watch?v='.length);
+
+   }
+   return null;
   }
 
   @override

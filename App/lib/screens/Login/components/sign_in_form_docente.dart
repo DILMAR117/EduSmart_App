@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:edusmart/api/conexion.dart';
-import 'package:edusmart/screens/Login/components/reset_password.dart';
+import 'package:edusmart/screens/Login/components/resetpassword/enviar_email.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

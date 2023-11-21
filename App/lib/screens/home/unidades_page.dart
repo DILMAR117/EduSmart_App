@@ -9,6 +9,7 @@ class UnidadPage extends StatefulWidget {
   UnidadPage({super.key, required this.titulo, required this.id_materia});
   String titulo;
   int id_materia;
+  
 
   @override
   State<UnidadPage> createState() => _UnidadPageState();
@@ -23,7 +24,7 @@ class _UnidadPageState extends State<UnidadPage> {
     super.initState();
     _conexion.fetchUnidades(widget.id_materia);
     _conexion.getalumnoData();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds : 800), () {
       setState(() {
         isLoading = false;
       });
@@ -80,7 +81,7 @@ class _UnidadPageState extends State<UnidadPage> {
                               width: 400,
                               height: 200,
                               child:  Text("No hay unidades disponibles",
-                                  style: AppTextStyles.bodyLightGrey20,
+                                  style: AppTextStyles.bodyLightGrey15,
                                   textAlign: TextAlign.center),
                             ),
                           ],
@@ -163,7 +164,7 @@ class _UnidadPageState extends State<UnidadPage> {
                                   ),
                                 ),
                                 // Mostramos los temas de la unidad
-                                TemaScreen(id_unidad: unidad["id_unidad"]),
+                                TemaScreen(id_unidad: unidad["id_unidad"], idmateria: widget.id_materia, materia: widget.titulo,),
                               ],
                             ),
                           ),

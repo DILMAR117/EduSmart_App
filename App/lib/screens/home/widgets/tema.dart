@@ -4,8 +4,15 @@ import 'package:edusmart/utils/transition.dart';
 import 'package:flutter/material.dart';
 import '../../Menu/subtema_menu.dart';
 class TemaScreen extends StatefulWidget {
-const TemaScreen({super.key, required this.id_unidad});
+const TemaScreen({super.key,
+ required this.id_unidad,
+ required this.idmateria,
+ required this.materia
+
+ });
   final int id_unidad;
+  final int idmateria;
+  final String materia;
   @override
   State<TemaScreen> createState() => _TemaScreenState();
 }
@@ -16,7 +23,7 @@ class _TemaScreenState extends State<TemaScreen>{
   void initState(){
     super.initState();
     _conexion.fetchTemas(widget.id_unidad);
-     Future.delayed(Duration(seconds: 2), () {
+     Future.delayed(const Duration(milliseconds: 800), () {
     setState(() {
       isLoading = false; 
     });
@@ -59,7 +66,7 @@ class _TemaScreenState extends State<TemaScreen>{
               Navigator.push(
               context,
               ScaleTransition5(
-               SubtemaMenu(titulo: titulo, id_tema: temas["id_tema"]),
+               SubtemaMenu(titulo: titulo, id_tema: temas["id_tema"], idMateria: widget.idmateria, materia: widget.materia),
               ),
               );
             },

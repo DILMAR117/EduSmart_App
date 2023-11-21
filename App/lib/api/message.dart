@@ -8,7 +8,7 @@ class Message{
     context: context,
     builder: (BuildContext context) {
       return Container(
-        padding: EdgeInsets.all(16.0),
+        padding:const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start, 
@@ -29,12 +29,12 @@ class Message{
             ElevatedButton(
               style:  ElevatedButton.styleFrom(
               backgroundColor: azul, // Cambia aquí el color que desees
-              textStyle: TextStyle(fontSize: 18), // Cambia aquí el tamaño del texto
+              textStyle:const TextStyle(fontSize: 18), // Cambia aquí el tamaño del texto
                ),
               onPressed: () {
                 Navigator.of(context).pop(); // Cierra el BottomSheet
               },
-              child: Text('Cerrar'),
+              child:const Text('Cerrar'),
             ),
           ],
         ),

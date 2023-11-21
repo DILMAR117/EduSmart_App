@@ -1,8 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../screens/Login/components/resetpassword/nueva_contrasena.dart';
+import '../screens/Login/components/resetpassword/verificar_clave.dart';
+import '../utils/transition.dart';
 import 'message.dart';
 
 
@@ -18,6 +23,8 @@ class Conexion with ChangeNotifier {
   List<dynamic> ranking =[];
   Map<String, dynamic>? userData;
   String? matricula;
+  List<dynamic> activo = [];
+  List<dynamic> idExamen =[];
   int? _id;
   String ip ="192.168.1.90:3000"; 
   final Message _meessage =Message();
@@ -68,8 +75,8 @@ Future<void> fetchUnidades(int id_materia) async {
     }
   }
     //Método para poder extraer todos los  temas por unidad
-Future<void> fetchTemas(int id_unidad) async {
-    final response = await http.get(Uri.parse('http://$ip/api/temas/$id_unidad'));
+Future<void> fetchTemas(int idUnidad) async {
+    final response = await http.get(Uri.parse('http://$ip/api/temas/$idUnidad'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
         temas = data;
@@ -78,8 +85,8 @@ Future<void> fetchTemas(int id_unidad) async {
     }
   }
       //Método para poder extraer todos los  subtemas por tema
-Future<void> fetchSubtemas(int id_tema) async {
-    final response = await http.get(Uri.parse('http://$ip/api/subtema/$id_tema'));
+Future<void> fetchSubtemas(int idTema) async {
+    final response = await http.get(Uri.parse('http://$ip/api/subtema/$idTema'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
         subtemas = data;
@@ -88,8 +95,8 @@ Future<void> fetchSubtemas(int id_tema) async {
     }
   }
 //Método para poder extraer todos las infografías por subtema
-Future<void> fetchInfografia(int id_subtema) async {
-    final response = await http.get(Uri.parse('http://$ip/api/infografia/$id_subtema'));
+Future<void> fetchInfografia(int idSubtema) async {
+    final response = await http.get(Uri.parse('http://$ip/api/infografia/$idSubtema'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
         infografias = data;
@@ -98,8 +105,8 @@ Future<void> fetchInfografia(int id_subtema) async {
     }
   }
   //Método para poder extraer todos los videos por subtema
-Future<void> fetchVideo(int id_subtema) async {
-    final response = await http.get(Uri.parse('http://$ip/api/video/$id_subtema'));
+Future<void> fetchVideo(int idSubtema) async {
+    final response = await http.get(Uri.parse('http://$ip/api/video/$idSubtema'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
         videos = data;
@@ -107,9 +114,20 @@ Future<void> fetchVideo(int id_subtema) async {
       print('Error al obtener los videos');
     }
   }
-  //Método para poder extraer todos los videos por subtema
-Future<void> fetchPregunta(int id_alumno) async {
-    final response = await http.get(Uri.parse('http://$ip/api/preguntas/$id_alumno'));
+  //Método para verificar los examenes activos
+  Future<void> fetchExamenActivo(int idMateria) async{
+    final response = await http.get(Uri.parse('http://$ip/api/examenActivo?idMateria=$idMateria'));
+    if(response.statusCode == 200){
+      final data = json.decode(response.body);
+      activo = data;
+    }else{
+      print('Error al obtener la consulta');
+    }
+
+  }
+  //Método para poder consultar las preguntas por materia
+Future<void> fetchPregunta(int idAlumno, int idMateria) async {
+    final response = await http.get(Uri.parse('http://$ip/api/preguntas?id_alumno=$idAlumno&id_materia=$idMateria'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
         preguntas = data;
@@ -119,9 +137,9 @@ Future<void> fetchPregunta(int id_alumno) async {
   }
   //Función para poder almacenar la respuesta de los alumnos
 Future<void> guardarRespuestas(
-  int id_pregunta,
-  int id_alumno,
-  int id_equipo,
+  int idPregunta,
+  int idAlumno,
+  int idEquipo,
   String respuestas,
   BuildContext context
 ) async{
@@ -131,9 +149,9 @@ Future<void> guardarRespuestas(
     final response = await http.post(
       Uri.parse(serverUrl),
       body: jsonEncode({
-        'id_pregunta':id_pregunta,
-        'id_alumno': id_alumno,
-        'id_equipo': id_equipo,
+        'id_pregunta':idPregunta,
+        'id_alumno': idAlumno,
+        'id_equipo': idEquipo,
         'respuestas': respuestas
 
       }),
@@ -142,24 +160,24 @@ Future<void> guardarRespuestas(
     if(response.statusCode == 200){
       
     } else{
-      _meessage.mostrarBottomSheet(context, 'Error',
+      _meessage.mostrarBottomSheet(context,
+       'Error',
        'No fue posible guardar las respuestas',
        Colors.red 
        );
     }
   }catch(e){
-    _meessage.mostrarBottomSheet(
-        context,
+    _meessage.mostrarBottomSheet(context,
         "Error",
-        "Error de conexion: $e",
+        "Ocurrio un error: $e",
          Colors.red
         );
   }
 
 }
 //Función para obtenre las respuestas del alumno y las respeutas de las preguntas
-Future<void> fetchRespuestas(int id_alumno, BuildContext context) async{
-    final response = await http.get(Uri.parse('http://$ip/api/respuestas/$id_alumno'));
+Future<void> fetchRespuestas(int idAlumno, int idMateria, BuildContext context) async{
+    final response = await http.get(Uri.parse('http://$ip/api/respuestas?alumnoId=$idAlumno&materiaId=$idMateria'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
         respuestas = data;
@@ -170,19 +188,19 @@ Future<void> fetchRespuestas(int id_alumno, BuildContext context) async{
 }
 //Función para almacenar la gamificación
 Future<void> enviarGamificacion(
-  int id_examen,
-  int id_alumno,
-  int id_materia,
+  int idExamen,
+  int idAlumno,
+  int idMateria,
   double puntaje
 )async{
     final String serverUrl ='http://$ip/api/enviar_gamificacion';
     try{
       final response = await http.post(Uri.parse(serverUrl),
       body: jsonEncode({
-        'id_examen':id_examen,
-        'id_alumno': id_alumno,
-        'id_materia': id_materia,
-        'puntaje': puntaje
+        'id_examen':idExamen,
+        'id_alumno': idAlumno,
+        'id_materia': idMateria,
+        'puntajes': puntaje
       }),
       headers: {'Content-Type': 'application/json'},
       
@@ -201,9 +219,20 @@ Future<void> enviarGamificacion(
     }
   
 }
+//Función para obtener el id del exámen en la tabla de gamificación  por materia y alumnos inscritos en esa materia
+Future<dynamic> fetchIdExamen(int idMateria, int idAlumno)async{
+  final response = await http.get(Uri.parse('http://$ip/api/idexamen?idMateria=$idMateria&idAlumno=$idAlumno'));
+    if(response.statusCode == 200){
+      final data = json.decode(response.body);
+      idExamen = data;
+      print('IdExamen es:$idExamen');
+    }else{
+      print("Error al obter el id de exámen");
+    }
+}
 //Función para obtener los datos de gamificación
-Future<dynamic> fetchGamificacion() async{
-   final response = await http.get(Uri.parse('http://$ip/api/gamificacion'));
+Future<dynamic> fetchGamificacion(int idMateria, int idExamen) async{
+   final response = await http.get(Uri.parse('http://$ip/api/gamificacion?idMateria=$idMateria&idExamen=$idExamen'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
         ranking = data;
@@ -237,26 +266,25 @@ Future<void> actualizarDatosAlumno(
         },
       );
       if (response.statusCode == 200) {
-        _meessage.mostrarBottomSheet(context,"Success",
+         notificarOyentes();
+         Navigator.of(context).pop();
+           _meessage.mostrarBottomSheet(context,
+        "Success",
         "Datos del alumno actualizados correctamente",
          Colors.green
          );
-         notifyListeners();
-        print('Datos del alumno actualizados correctamente');
       } else {
         _meessage.mostrarBottomSheet(context,
         "Error", "Error al actualizar datos del alumno",
-        Colors.red);
-        print('Error al actualizar datos del alumno');
+        Colors.red
+        );
       }
       } catch (e) {
-        _meessage.mostrarBottomSheet(
-        context,
+        _meessage.mostrarBottomSheet(context,
         "Error",
         "Error de conexion: $e",
          Colors.red
         );
-      print('Error de conexión: $e');
       }
   }
   Future uploadImage(File image, String matricula,) async {
@@ -270,23 +298,124 @@ Future<void> actualizarDatosAlumno(
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      /*Navigator.pushAndRemoveUntil(
-                      context, MaterialPageRoute(
-                        builder: (context) =>  ProfileApp(),
-                      ),
-                      (Route<dynamic> route) => false, // Predicado para eliminar todas las rutas anteriores
-                    );*/
-      print('Foto del alumno actualizada correctamente.');
+       notificarOyentes();
     } else {
-      print('Error al actualizar la foto del alumno.');
+  
     }
   }
-  
+  //Función para recuperar la contraseña
+  Future<void> resetPassword(BuildContext context, String correo) async{
+    String serverUrl ='http://$ip/recuperar-contrasena';
 
+    try{
+      final response = await http.post(Uri.parse(serverUrl),
+        body: jsonEncode({
+          'correo':correo
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if(response.statusCode == 200){
+        final SizeTransition5 _transition = SizeTransition5( VerificarClave(correo: correo));
+        Navigator.push(context, _transition);
+        Future.delayed(const Duration(seconds: 2),(){
+          _meessage.mostrarBottomSheet(context,
+         'Success',
+         'Código de verificación enviado con éxito a $correo',
+          Colors.green
+          );
+        
+        });
+      }else if(response.statusCode == 400){
+       _meessage.mostrarBottomSheet(context,
+        'Error',
+       'El correo $correo no esta registrado',
+       Colors.red); 
+      }else{
+         _meessage.mostrarBottomSheet(context,
+        'Error',
+       'Error al enviar el correo de recuperación de contraseña',
+       Colors.red);
+      }
+
+    }catch(e){
+      _meessage.mostrarBottomSheet(context,
+        'Error',
+       'Ocurrio un error ${e}',
+       Colors.red); 
+    }
+
+  }
+  //Función para recuperar la contraseña
+  Future<void> verificarClave(BuildContext context, String correo, String clave) async{
+    String serverUrl ='http://$ip/verificar-clave-recuperacion';
+    try{
+      final response = await http.post(Uri.parse(serverUrl),
+        body: jsonEncode({
+          'correo':correo,
+          'claveUsuario':clave
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if(response.statusCode == 200){
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+        final SizeTransition5 _transition = SizeTransition5( NuevaContrasena(correo: correo));
+        Navigator.push(context, _transition);
+
+      }else if(response.statusCode == 400){
+       _meessage.mostrarBottomSheet(context,
+        'Error',
+       'Clave no válida o tiempo de expiración ha concluido ',
+       Colors.red); 
+      }else{
+         
+      }
+
+    }catch(e){
+      _meessage.mostrarBottomSheet(context,
+        'Error',
+       'Ocurrio un error ${e}',
+       Colors.red); 
+    }
+
+  }
+  //Función para poder restablcer la contraseña en la base de datos
+    Future<void> restabelcerContrasena(BuildContext context, String contrasena, String correo)async{
+      String serverUrl ='http://$ip/actualizar-contrasena?correo=$correo';
+      try {
+      final response = await http.put(
+        Uri.parse(serverUrl),
+        body: {
+          'nuevaContrasena': contrasena,
+          },
+      );
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+          _meessage.mostrarBottomSheet(context,
+           "Success",
+          "La contraseña se reesablecio de manera exitosa",
+           Colors.green
+         );
+       
+      } else {
+        _meessage.mostrarBottomSheet(context,
+        "Error", "No se pudo restablcer la contraseña",
+        Colors.red
+        );
+      }
+      } catch (e) {
+        _meessage.mostrarBottomSheet(context,
+        "Error",
+        "Error de conexion: $e",
+         Colors.red
+        );
+      }
+
+    }
    //Función para guardar los datos del usuario en SharedPreferences.
     Future<void> saveUserData(String matricula,) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('matricula', matricula);
+     notificarOyentes();
     //print('Matricula guardada $matricula');
   }
 //Función para mostrar los datos del usuario con SharedPreferences
@@ -294,7 +423,11 @@ Future<void> actualizarDatosAlumno(
     SharedPreferences prefs = await SharedPreferences.getInstance();
     matricula =prefs.getString('matricula');
     _getUserData("$matricula");
+     notificarOyentes();
     return matricula;
+  }
+  void notificarOyentes(){
+    notifyListeners();
   }
 
 

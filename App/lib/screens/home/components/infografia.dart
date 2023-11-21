@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import '../../../api/conexion.dart';
 import '../../../constants.dart';
+import '../../../utils/app_text_styles.dart';
 import '../../appbar/appbar_widget.dart';
 
 
@@ -25,7 +26,7 @@ class PDFScreen extends StatefulWidget {
   void initState() {
     super.initState();
     _conexion.getalumnoData();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
       });
@@ -86,7 +87,7 @@ class _InfografiaScreenState extends State<InfografiaScreen>{
     super.initState();
     _conexion.fetchInfografia(widget.id_subtema);
     _conexion.getalumnoData();
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
       });
@@ -145,7 +146,8 @@ class _InfografiaScreenState extends State<InfografiaScreen>{
                       Container(
                         width: 400,
                         height: 50,
-                        child: const Text("No hay infografias disponibles",
+                        child: Text("No hay recursos disponibles",
+                        style: AppTextStyles.bodyLightGrey15,
                             textAlign: TextAlign.center),
                       ),
                     ],

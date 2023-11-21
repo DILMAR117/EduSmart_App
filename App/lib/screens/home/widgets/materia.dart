@@ -1,8 +1,8 @@
 import 'package:edusmart/screens/Menu/unidades_menu.dart';
 import 'package:edusmart/utils/transition.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
 import '../../../api/conexion.dart';
+import '../../../utils/app_text_styles.dart';
 
 class MateriaScreen extends StatefulWidget {
   const MateriaScreen({Key? key}) : super(key: key);
@@ -13,12 +13,13 @@ class MateriaScreen extends StatefulWidget {
   class _MateriaScreenState extends State<MateriaScreen>{
     bool isLoading= true;
     final Conexion _conexion = Conexion();
+    int indexma =0;
      @override
     void initState() {
       super.initState();
       _conexion.getalumnoData();
         // _conexion.fetchMaterias();
-      Future.delayed(Duration(seconds: 2), () {
+      Future.delayed(const Duration(milliseconds: 800), () {
           setState(() {
             isLoading = false; 
             }
@@ -27,22 +28,24 @@ class MateriaScreen extends StatefulWidget {
       );
     }
 
-    Future<void> refresh() async {
-        await Future.delayed(const Duration(seconds: 4), (){
-          setState(() {
-           _conexion.getalumnoData();   
-          }
-        ); 
-       }
-     );
-    }
+    //Refrescar el estado para volver a mostrar los datos
+  Future<void> _refreshData() async {
+    //Esperamos a una respuesta de las preguntas
+    await Future.delayed(const Duration(seconds: 3),() {
+        setState(() {
+           _conexion.getalumnoData();
+        });
+       
+    });
+  }
     
   @override
   Widget build(BuildContext context) {
     //Se muestran los  temas del curso
   return RefreshIndicator(
-    onRefresh: refresh,
+    onRefresh: _refreshData,
     child: SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -56,26 +59,14 @@ class MateriaScreen extends StatefulWidget {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 childAspectRatio: 16 / 7, crossAxisCount: 1, mainAxisSpacing: 20),
             itemBuilder: (context, index) {
-              if (index >= _conexion.materias.length) {
-                // Evita que se muestre un elemento nulo
-              return  Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 20, bottom: 16),
-                    ),
-                    Container(
-                      width: 400,
-                      height: 400,
-                      child: const RiveAnimation.asset(
-                        "assets/RiveAssets/no-results.riv",
-                        fit: BoxFit.cover,
-                        alignment: Alignment.center,
-                      ),
-                    ),
-                  ]
-                ); 
+               if (index >= _conexion.materias.length) {
+                 // Evita que se muestre un elemento nulo
+              return  const Center(
+                           child: Text('')
+                      );
               }
               //Se muestra la lista de materias que hay en la base de datos
+              indexma = index;
               final  materia = _conexion.materias[index];
               return GestureDetector( 
                   onTap: () {
@@ -146,6 +137,24 @@ class MateriaScreen extends StatefulWidget {
             }
           )
         ),
+        if (indexma >= _conexion.materias.length) 
+        // Evita que se muestre un elemento nulo
+              Visibility(
+                visible: !isLoading,
+                child: Center(
+                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                             Image.asset('assets/box/materia.png'),
+                            Text('No hay materias disponibles',
+                              style: AppTextStyles.bodyLightGrey15,
+                            textAlign: TextAlign.center
+                              )
+                          ],
+                       )
+                       ),
+              ),
+                
         const SizedBox(height: 130.0),
         Visibility(
           visible: isLoading, // Muestra el loading cuando isLoading es true

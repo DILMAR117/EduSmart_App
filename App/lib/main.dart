@@ -7,17 +7,15 @@ import 'screens/Menu/entry_point.dart';
 
 
 void main() {
-  runApp(ChangeNotifierProvider(
+  runApp(
+    ChangeNotifierProvider(
     create:(context) => Conexion(),
-    child: const MyApp(),
+    child:  MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

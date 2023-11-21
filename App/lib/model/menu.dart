@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../views/perfil.dart';
-import '../views/ranking.dart';
 import 'rive_model.dart';
 
+int idMateria = 0;
 class Menu {
   final String title;
   final RiveModel rive;
@@ -14,7 +14,12 @@ class Menu {
    this.ruta,
    this.page,
   });
+  void idmateria(int id){
+    idMateria = id;
+  }
 }
+
+
 List<Menu> sidebarMenus = [
   Menu(
     title: "Perfil",
@@ -24,14 +29,8 @@ List<Menu> sidebarMenus = [
         stateMachineName: "USER_Interactivity"),
     page:const  ProfileApp(), 
   ),
-  Menu(
-    title: "Ranking",
-    rive: RiveModel(
-        src: "assets/RiveAssets/icons.riv",
-        artboard: "LIKE/STAR",
-        stateMachineName: "STAR_Interactivity"),
-    page: Ranking(),
-  ),
+];
+List<Menu>menu2=[
   Menu(
     title: "Acerca de",
     rive: RiveModel(
@@ -40,8 +39,6 @@ List<Menu> sidebarMenus = [
         stateMachineName: "CHAT_Interactivity"),
         ruta: "",
   ),
-];
-List<Menu>menu2=[
  Menu(
     title: "Cerrar Sesión",
     rive: RiveModel(
@@ -59,6 +56,15 @@ List<Menu>home=[
         artboard: "HOME",
         stateMachineName: "HOME_interactivity"),
         ruta: '/home'
+  ),
+];
+List<Menu>ranking=[
+   Menu(
+    title: "Ranking",
+    rive: RiveModel(
+        src: "assets/RiveAssets/icons.riv",
+        artboard: "LIKE/STAR",
+        stateMachineName: "STAR_Interactivity"),
   ),
 ];
 

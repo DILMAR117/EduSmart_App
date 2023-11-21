@@ -8,10 +8,14 @@ import 'components/menu_btn.dart';
 import 'components/side_bar.dart';
 
 class UnidadesMenu extends StatefulWidget {
-  const UnidadesMenu({super.key, required this.titulo, required this.id_materia});
+  const UnidadesMenu({super.key,
+   required this.titulo,
+  required this.id_materia,
+  });
   //final List<Subtema> subtemas;
   final String titulo;
   final int id_materia;
+ 
   
 
   @override
@@ -21,7 +25,7 @@ class UnidadesMenu extends StatefulWidget {
 class _UnidadesMenuState extends State<UnidadesMenu>
     with SingleTickerProviderStateMixin {
   bool isSideBarOpen = false;
-  Menu selectedSideMenu = sidebarMenus[1];
+  Menu selectedSideMenu = sidebarMenus[0];
   late SMIBool isMenuOpenInput;
 
   late AnimationController _animationController;
@@ -42,7 +46,7 @@ class _UnidadesMenuState extends State<UnidadesMenu>
     animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
         parent: _animationController, curve: Curves.fastOutSlowIn));
     super.initState();
-    sidebarMenus[2];
+    sidebarMenus[0];
   }
  
 
@@ -67,7 +71,7 @@ class _UnidadesMenuState extends State<UnidadesMenu>
             curve: Curves.fastOutSlowIn,
             left: isSideBarOpen ? 0 : -288,
             top: 0,
-            child: const SideBar(),
+            child: SideBar(idmateria: widget.id_materia, tituloMateria: widget.titulo),
           ),
           Transform(
             alignment: Alignment.center,

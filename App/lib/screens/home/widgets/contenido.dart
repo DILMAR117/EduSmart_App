@@ -31,7 +31,7 @@ class _ContenidoState extends State<Contenido>{
     _conexion.getalumnoData();
     _conexion.fetchVideo(widget.id_subtema);
     _conexion.fetchInfografia(widget.id_subtema);
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
       });
