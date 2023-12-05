@@ -28,12 +28,12 @@ class Conexion with ChangeNotifier {
   List<dynamic> activo = [];
   List<dynamic> idExamen =[];
   int? _id;
-  //String ip ="https://edusmartapi-dev-mftg.3.us-1.fl0.io"; 
-  String ip ="http://192.168.1.90:3000";
-  String urlImg ="http://192.168.1.90/EduSmart_Equipos/multimedia/";
-  //String urlImg="https://codeedusmart.com/files/public_html/files/materias/";
-  //String urlDoc ="https://codeedusmart.com/files/public_html/files/uploads";
-  String urlDoc ="http://192.168.1.90/EduSmart_Equipos//uploads";
+  String ip ="https://edusmartapi-dev-mftg.3.us-1.fl0.io"; 
+  //String ip ="http://192.168.1.90:3000";
+  //String urlImg ="http://192.168.1.90/EduSmart_Equipos/multimedia/";
+  String urlImg="https://codeedusmart.com/files/public_html/files/materias/";
+  String urlDoc ="https://codeedusmart.com/files/public_html/files/uploads";
+  //String urlDoc ="http://192.168.1.90/EduSmart_Equipos/uploads";
   final Message _meessage =Message();
 //Método para poder extraer a los alumnos autenticados
   Future<void> _getUserData(String matricula, String token) async {

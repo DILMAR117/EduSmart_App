@@ -122,7 +122,7 @@ class _InfografiaScreenState extends State<InfografiaScreen> {
     if (!pdfFile.existsSync()) {
       try {
         final response =
-            await http.get(Uri.parse('$pdfUrl/$nombre')); // Corrección aquí
+            await http.get(Uri.parse('$pdfUrl/${nombre}')); // Corrección aquí
         if (response.statusCode == 200) {
           await pdfFile.writeAsBytes(response.bodyBytes);
           //print('PDF descargado en: $filePath');
@@ -260,7 +260,7 @@ class _InfografiaScreenState extends State<InfografiaScreen> {
                                 final infografias =
                                     _conexion.infografias[index];
                                 //String ruta ="assets/pdf/tema1/conceptos";
-                                String urlPDF = _conexion.urlDoc;
+                                String urlPDF = infografias["nombre_archivo"];
 
                                 return GestureDetector(
                                     onTap: () async {
