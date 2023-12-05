@@ -1,54 +1,57 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import '../../../../api/conexion.dart';
 import '../../../../constants.dart';
 import '../../../../utils/app_text_styles.dart';
 
-class ResetPassword extends StatefulWidget {
-  const ResetPassword({super.key});
+class EditTelefono extends StatefulWidget {
+  final String telefono;
+  final String matricula;
+  final String token;
+  final String foto;
+  const EditTelefono({
+    Key? key,
+    required this.telefono,
+    required this.matricula,
+    required this.token,
+    required this.foto,
+    
+}):super (key: key);
 
   @override
-  State<ResetPassword> createState() => _ResetPasswordState();
+  State<EditTelefono> createState() => _EditTelefonoState();
 }
 
-class _ResetPasswordState extends State<ResetPassword> {
-  final TextEditingController _emailController = TextEditingController();
+class _EditTelefonoState extends State<EditTelefono> {
+  final TextEditingController _telefonoController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Conexion _conexion = Conexion();
   bool _isLoading = false;
   //bool isAnimating = false;
 
-  late RiveAnimationController _btnAnimationController;
 
   @override
   void initState() {
-    _btnAnimationController = OneShotAnimation(
-      "active",
-      autoplay: false,
-    );
+    _telefonoController.text = widget.telefono;
     super.initState();
   }
 
   void _sendEmail() async {
     //Se envian los datos para poder realizar la consulta
     if (_formKey.currentState!.validate()) {
-      _btnAnimationController.isActive = true;
       //Mostrar un indicador al realizar la consulta
       setState(() {
         _isLoading = true;
       });
       // Enviar el correo electrónico aquí
-      await _conexion.resetPassword(context, _emailController.text);
+      await _conexion.editarDatos(widget.matricula, null, _telefonoController.text, null, context, widget.token );
       //Ocultamos el indicador
       setState(() {
         _isLoading = false;
       });
       // Limpiar los campos después de enviar el correo
       Future.delayed(const Duration(microseconds: 900), () {
-        _emailController.clear();
+        _telefonoController.clear();
       });
     }
   }
@@ -75,7 +78,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                           ), // Indicador de carga
                           const SizedBox(height: 20),
                           Text(
-                            'Enviando clave a tu correo...',
+                            'Editando número de teléfono...',
                             style: AppTextStyles.bodyLightGrey15,
                           ), // Mensaje de cierre de sesión
                         ],
@@ -91,14 +94,17 @@ class _ResetPasswordState extends State<ResetPassword> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Center(
-                            child: Container(
-                              alignment: null,
-                              width: 155,
-                              height: 155,
-                              child: RiveAnimation.asset(
-                                "assets/RiveAssets/mail-send.riv",
-                                controllers: [_btnAnimationController],
-                              ),
+                            child:  Container(
+                              width: 80,
+                              height: 80,
+                              child: const CircleAvatar(
+                                backgroundColor: blanco,
+                                radius: 10.0,
+                                child: Icon(Icons.phone,
+                                            size: 40.0,
+                                            color:azul_oscuro,
+                                            ),
+                              )
                             ),
                           ),
                           const SizedBox(height: 16.0),
@@ -109,7 +115,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text(
-                                  "Verifica tus datos y recibe un correo electrónico para restablecer la contraseña",
+                                  "Ya puedes actualizar tu número de teléfono",
                                   style: TextStyle(
                                     color: blanco,
                                     fontFamily: "Poppins",
@@ -118,52 +124,44 @@ class _ResetPasswordState extends State<ResetPassword> {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 16.0),
-                                //Campo email
+                                //Campo teléfono
                                 const Text(
-                                  "Correo electrónico",
-                                  style: TextStyle(
-                                    color: blanco,
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(top: 8, bottom: 16),
-                                  child: TextFormField(
-                                    controller: _emailController,
-                                    cursorColor: blanco,
-                                    style: const TextStyle(color: blanco),
-                                    keyboardType: TextInputType.emailAddress,
-                                    
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return "Por favor, ingrese un correo electrónico.";
-                                      }
-                                      final emailRex = RegExp(
-                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                          caseSensitive: false,
-                                          multiLine: false);
-                                      if (!emailRex.hasMatch(value)) {
-                                        return 'Por favor, ingrese un correo electrónico válido';
-                                      }
-                                      return null;
-                                    },
-                                    decoration: InputDecoration(
-                                      enabledBorder: const UnderlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: blanco)),
-                                      focusedBorder: const UnderlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: blanco)),
-                                      prefixIcon: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        child: SvgPicture.asset(
-                                            "assets/icons/correo.svg"),
+                                        "Teléfono",
+                                        style: TextStyle(
+                                            color: blanco,
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                    ),
-                                  ),
-                                ),
+                                     Padding(
+                                        padding: const EdgeInsets.only(top: 8, bottom: 16),
+                                        child: TextFormField(
+                                            cursorColor: blanco,
+                                            maxLength: 10,
+                                            controller: _telefonoController,
+                                            style:
+                                                const TextStyle(color: blanco),
+                                            keyboardType:
+                                                TextInputType.phone,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return "Por favor, ingrese su número de teléfono.";
+                                              }else if (value.length < 10) {
+                                                return 'Se requiere al menos 10 dígitos.';
+                                              }
+                                              return null;
+                                            },
+                                            decoration: const  InputDecoration(
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: blanco)),
+                                              focusedBorder:
+                                                   UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: blanco)),
+                                              counterStyle: TextStyle(
+                                                color: blanco
+                                              )
+                                            ))),
                                 const SizedBox(height: 0.0),
                                 Padding(
                                   padding:
@@ -190,7 +188,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                                       color: azul,
                                     ),
                                     label: const Text(
-                                      "Enviar correo",
+                                      "Actualizar teléfono",
                                       style: TextStyle(
                                           color: azul, fontFamily: "Poppins"),
                                      ),
@@ -215,6 +213,33 @@ class _ResetPasswordState extends State<ResetPassword> {
                   },
                 ),
               ),
+              const Positioned(
+            top: 55,
+            right: 135,
+            child: Text(
+              "Cuenta de EduSmart",
+              style: TextStyle(
+                  color: blanco,
+                  fontFamily: "Poppins",
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            )),
+             Positioned(
+              top: 40,
+              right: 10,
+              child:GestureDetector(
+                        onTap: (){
+                         
+                        },
+                        child: Container(
+                        margin:const EdgeInsets.only(top: 5, right: 16, bottom: 5),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              '${_conexion.ip}/get-image/${widget.foto}'),
+                        ),
+                      ),
+                      )
+              )
             ],
           ),
         ));

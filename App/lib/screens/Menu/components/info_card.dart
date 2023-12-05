@@ -17,7 +17,7 @@ class InfoCard extends StatelessWidget {
     //Se muestra el nombre y la imágen de perfil
     return ListTile(
       leading:  CircleAvatar(
-         backgroundImage: NetworkImage('http://${_conexion.ip}/get-image/${foto}'),
+         backgroundImage: NetworkImage('${_conexion.ip}/get-image/${foto}'),
          radius: 30,
         
       ),

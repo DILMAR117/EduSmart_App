@@ -3,7 +3,7 @@
    <application
         android:label="EduSmart"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/icono72x72">
         <activity
             android:name=".MainActivity"
             android:exported="true"

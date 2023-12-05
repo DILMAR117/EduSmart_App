@@ -47,7 +47,7 @@ class AppBarWidget extends AppBar {
                     margin: const EdgeInsets.only(top: 5, right: 16, bottom: 5),
                     child: CircleAvatar(
                       backgroundImage: NetworkImage(
-                          'http://${conexion.ip}/get-image/${conexion.userData!['foto']}'),
+                          '${conexion.ip}/get-image/${conexion.userData!['foto']}'),
                     ),
                   ),
                   )

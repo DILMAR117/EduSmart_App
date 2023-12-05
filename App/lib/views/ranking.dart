@@ -1,6 +1,7 @@
 import 'package:edusmart/api/conexion.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_text_styles.dart';
@@ -12,12 +13,14 @@ class Ranking extends StatefulWidget {
       required this.idMateria,
       required this.idAlumno,
       required this.materia,
-      required this.idExamen
+      required this.idExamen,
+      required this.token,
       });
   final int idMateria;
   final int idAlumno;
   final String materia;
   final int idExamen;
+  final String token;
 
   @override
   State<Ranking> createState() => _RankingState();
@@ -33,9 +36,8 @@ class _RankingState extends State<Ranking> {
   bool isLoading = true;
   @override
   void initState() {
+    _conexion.fetchGamificacion(widget.idMateria, widget.idExamen, widget.token);
     super.initState();
-    _conexion.fetchGamificacion(widget.idMateria, widget.idExamen);
-
     Future.delayed(const Duration(milliseconds: 900), () {
       setState(() {
         obtenerLista();
@@ -47,7 +49,7 @@ class _RankingState extends State<Ranking> {
       });
     });
   }
-
+  
   void obtenerLista() {
     var data = _conexion;
     setState(() {
@@ -61,14 +63,14 @@ class _RankingState extends State<Ranking> {
   Future<void> _refreshData() async {
     //Esperamos a una respuesta de las preguntas
     await Future.delayed(const Duration(milliseconds: 800), () {
-      _conexion.fetchGamificacion(widget.idMateria, widget.idExamen);
+      _conexion.fetchGamificacion(widget.idMateria, widget.idExamen, widget.token);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
-        future: _conexion.fetchGamificacion(widget.idMateria, widget.idExamen),
+        future: _conexion.fetchGamificacion(widget.idMateria, widget.idExamen, widget.token),
         builder: (context, snapshot) {
           //Esperamos una respuesta de los datos
           if (!snapshot.hasData) {
@@ -153,7 +155,7 @@ class _RankingState extends State<Ranking> {
                 ));
           }
 
-          /*else if(_conexion.ranking.length <3){
+          else if(_conexion.ranking.length <3){
             return Container(
               decoration: const BoxDecoration(color: azul_oscuro),
               child: Scaffold(
@@ -165,7 +167,7 @@ class _RankingState extends State<Ranking> {
                 
                 )
               );
-          }*/
+          }
           return Container(
             decoration: const BoxDecoration(color: azul_oscuro),
             child: Scaffold(
@@ -208,9 +210,9 @@ class _RankingState extends State<Ranking> {
                       flex: 5,
                       child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: _conexion.ranking.length - 3,
+                        itemCount: _conexion.ranking.length -3,
                         itemBuilder: (BuildContext context, int index) {
-                          final data = snapshot.data![index + 3];
+                          final data = snapshot.data[index + 3];
                           return Column(
                             children: [
                               data['id_alumno'] == widget.idAlumno

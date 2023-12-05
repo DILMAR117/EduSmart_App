@@ -13,6 +13,7 @@ class PreguntasScreen extends StatefulWidget {
   final ValueChanged<String> onSelectRespuesta;
   final int id_alumno;
   final int idMateria;
+  final String token;
   const PreguntasScreen({
     Key? key,
     required this.preguntas,
@@ -21,7 +22,8 @@ class PreguntasScreen extends StatefulWidget {
     required this.onSelect,
     required this.onSelectRespuesta,
     required this.id_alumno,
-    required this.idMateria
+    required this.idMateria,
+    required this.token
   }): super(key: key);
   @override
   _PreguntasScreenState createState() => _PreguntasScreenState();
@@ -40,7 +42,7 @@ class _PreguntasScreenState extends State<PreguntasScreen> {
   @override
   void initState() {
     super.initState();
-    _conexion.fetchPregunta(widget.id_alumno, widget.idMateria);
+    _conexion.fetchPregunta(widget.id_alumno, widget.idMateria, widget.token);
     _startTimer();
     //Dividimos el tiempo de respuesta en horas, minutos y segundos
     tiempo_respuesta = widget.preguntas[widget.index]["tiempo_respuesta"];
@@ -186,8 +188,8 @@ class _PreguntasScreenState extends State<PreguntasScreen> {
       // Es un enlace de YouTube, muestra el video
       return VerVideoExamen(filePath: url);
     }else if(imageFileName != null && (imageFileName.endsWith('.jpg')|| imageFileName.endsWith('png') ||imageFileName.endsWith('gif'))){
-      return Image.asset(
-                        'assets/box/${imageFileName}',
+      return Image.network(
+                        '${_conexion.urlImg}/${imageFileName}',
                         width: 320, 
                         height: 200, 
                         fit: BoxFit.contain,

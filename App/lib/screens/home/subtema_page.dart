@@ -7,9 +7,15 @@ import 'widgets/subtema.dart';
 
 
 class SubtemaPage extends StatefulWidget {
-  const SubtemaPage({super.key, required this.titulo, required this.id_tema,});
+  const SubtemaPage({super.key,
+   required this.titulo,
+   required this.id_tema,
+   required this.token,
+   
+   });
   final String titulo;
   final int id_tema;
+  final String token;
   @override
   State<SubtemaPage> createState()=> _SubtemaPageState();
   }
@@ -19,8 +25,8 @@ class SubtemaPage extends StatefulWidget {
     bool isLoading = true;
     @override
     void initState(){
+       _conexion.getalumnoData(widget.token);
       super.initState();
-      _conexion.getalumnoData();
       Future.delayed(const Duration(seconds: 2), (){
         setState(() {
         isLoading= false; 
@@ -52,7 +58,7 @@ class SubtemaPage extends StatefulWidget {
                       color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24),
                 ),
               ),
-              SubtemaScreen(titulo: widget.titulo, id_tema: widget.id_tema),
+              SubtemaScreen(titulo: widget.titulo, id_tema: widget.id_tema, token: widget.token),
              
             ],
           ),

@@ -2,9 +2,11 @@
 
 import 'package:edusmart/utils/transition.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../api/conexion.dart';
 import '../constants.dart';
 import 'perfiledit.dart';
+import 'verificarContraseña/verificarContrasena.dart';
 
 class ProfileApp extends StatefulWidget {
   const ProfileApp({super.key});
@@ -14,18 +16,39 @@ class ProfileApp extends StatefulWidget {
 }
 
 class _ProfileAppState extends State<ProfileApp> {
+  final TextEditingController _telefonoController = TextEditingController();
+  final  TextEditingController _correoController = TextEditingController();
+  final TextEditingController _contrasena = TextEditingController();
    bool isLoading= true;
   final Conexion _conexion = Conexion();
+  String? _token;
+  String foto = "";
+  String matricula = "";
 
   @override
   void initState(){
+    _obtenerToken();
+    isLoading =true;
     super.initState();
-    _conexion.getalumnoData();
+  }
 
-    Future.delayed(Duration(seconds: 1), () {
+  Future<void> _obtenerToken()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
     setState(() {
+      _token = token;
+    });  
+     await _conexion.getalumnoData(_token!);
+        
+
+     Future.delayed(Duration(seconds: 1), () {
+    setState(() {
+      _correoController.text = _conexion.userData!['correo'];
+      _telefonoController.text =_conexion.userData!['telefono'];
+      _contrasena.text = _conexion.userData!['contrasena'];
+      foto = _conexion.userData!['foto'];
+      matricula= _conexion.userData!['matricula'];
       isLoading = false;
-      _conexion.getalumnoData();
     });
   });
     
@@ -49,7 +72,7 @@ class _ProfileAppState extends State<ProfileApp> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 130.0),
-              _conexion.userData == null ? Visibility(
+               _conexion.userData == null ? Visibility(
                   visible: isLoading, // Muestra el loading cuando isLoading es true
                   child: const  Center(
                     child: CircularProgressIndicator(), // Puedes personalizar el loading según tus necesidades
@@ -61,7 +84,7 @@ class _ProfileAppState extends State<ProfileApp> {
                       children:  [
                         CircleAvatar(
                           radius: 60.0,
-                          backgroundImage: NetworkImage('http://${_conexion.ip}/get-image/${_conexion.userData!['foto']}'), // Replace with your image path
+                          backgroundImage: NetworkImage('${_conexion.ip}/get-image/${_conexion.userData!['foto']}'), // Replace with your image path
                         ),
                         const SizedBox(width: 20),
                         Text(
@@ -75,6 +98,7 @@ class _ProfileAppState extends State<ProfileApp> {
                       ],
                      )
                   ),
+                  
                      const SizedBox(height:0),
                     Container(
                         padding:
@@ -93,9 +117,9 @@ class _ProfileAppState extends State<ProfileApp> {
                           child: TextButton(
                             //al precionarlo indicamos la ruta al cual se va diriguir
                             onPressed: () {
-                              final SizeTransition5 _transition =SizeTransition5(PerfilEdit());
+                              final SizeTransition5 _transition =SizeTransition5(PerfilEdit(token: _token!,));
                               Navigator.push(context, _transition);
-                              print("Funciona");
+                              //print("Funciona");
                             },
                             child: const Center(
                               child: Text(
@@ -108,7 +132,137 @@ class _ProfileAppState extends State<ProfileApp> {
                               ),
                             ),
                           ),
-                        )),
+                        )
+                        ),
+                          SizedBox(height: 30,),
+                      //Campo correo
+                                    const Text(
+                                        "Correo Electronico",
+                                        style: TextStyle(
+                                          color: blanco,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                      
+                                      ),
+                        GestureDetector(
+                          //Navegar a la vista correspondiente pasando la variable a editar en este caso el correo electronico
+                          onTap: (){
+                            final SizeTransition5 _transition =SizeTransition5(VerificarContrasena(
+                            correo: _correoController.text,
+                            telefono: null,
+                            contrasena:null ,
+                             token: _token!,
+                            foto: foto,
+                            matricula: matricula
+                            ));
+                            Navigator.push(context, _transition);
+                          },
+                          child: TextFormField(
+                         enabled: false,
+                         controller: _correoController,
+                         style: TextStyle(color: blanco),
+                         keyboardType: TextInputType.emailAddress,
+                         decoration: InputDecoration(
+                           disabledBorder: UnderlineInputBorder(
+                             borderSide: BorderSide(color: blanco)
+                           ),
+                           border:UnderlineInputBorder(
+                             borderSide:
+                                    BorderSide(color: blanco)
+                           ),
+                           labelStyle: TextStyle(color: blanco),
+                           suffixIcon: Icon(Icons.arrow_forward_ios, color: blanco, size: 17,)
+                          
+                         ),
+                         
+                       )
+                       ),
+                        SizedBox(height: 20,),
+                      //Campo Télefono
+                                    const Text(
+                                        "Teléfono",
+                                        style: TextStyle(
+                                          color: blanco,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                      
+                                      ),
+                        GestureDetector(
+                          onTap:(){
+                            //Navegar a la vista correspondiente pasando la variable a editar en este caso el teléfono
+                            final SizeTransition5 _transition =SizeTransition5(VerificarContrasena(
+                            correo: null,
+                            telefono: _telefonoController.text,
+                            contrasena:null ,
+                             token: _token!,
+                            foto: foto,
+                            matricula: matricula
+                            ));
+                            Navigator.push(context, _transition);
+                          } ,
+                          child: TextFormField(
+                         enabled: false,
+                         controller: _telefonoController,
+                         style: TextStyle(color: blanco),
+                         keyboardType: TextInputType.phone,
+                         decoration: InputDecoration(
+                           disabledBorder: UnderlineInputBorder(
+                             borderSide: BorderSide(color: blanco)
+                           ),
+                           border:UnderlineInputBorder(
+                             borderSide:
+                                    BorderSide(color: blanco)
+                           ),
+                           labelStyle: TextStyle(color: blanco),
+                           suffixIcon: Icon(Icons.arrow_forward_ios, color: blanco, size: 17,)
+                          
+                         ),
+                         
+                       ),
+                        ),
+                        SizedBox(height: 20,),
+                      //Campo contraseña
+                                    const Text(
+                                        "Contraseña",
+                                        style: TextStyle(
+                                          color: blanco,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                      
+                                      ),
+                        GestureDetector(
+                          //Navegar a la vista correspondiente pasando la variable a editar en este caso la contraseña
+                          onTap: (){
+                           final SizeTransition5 _transition =SizeTransition5(VerificarContrasena(
+                            correo: null,
+                            telefono: null,
+                            contrasena:_contrasena.text,
+                             token: _token!,
+                            foto: foto,
+                            matricula: matricula
+                            ));
+                            Navigator.push(context, _transition);
+                          },
+                          child: TextFormField(
+                         enabled: false,
+                         initialValue: '12345678901',
+                         obscureText: true,
+                         style: TextStyle(color: blanco),
+                         decoration: InputDecoration(
+                           disabledBorder: UnderlineInputBorder(
+                             borderSide: BorderSide(color: blanco)
+                           ),
+                           border:UnderlineInputBorder(
+                             borderSide:
+                                    BorderSide(color: blanco)
+                           ),
+                           labelStyle: TextStyle(color: blanco),
+                           suffixIcon: Icon(Icons.arrow_forward_ios, color: blanco, size: 17,)
+                          
+                         ),
+                         
+                       ),
+                      )           
             ],
           ),
         ),

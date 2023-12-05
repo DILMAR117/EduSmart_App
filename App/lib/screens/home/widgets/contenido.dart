@@ -11,12 +11,14 @@ class   Contenido extends StatefulWidget {
   const Contenido({Key? key,
   required this.titulo, 
   required this.id_subtema,
-  required this.lenght
+  required this.lenght,
+  required this.token,
   }) : super(key: key);
    //final List<Contenido> contenido;
    final String titulo;
    final int id_subtema;
    final int lenght;
+   final String token;
 
    @override
    State<Contenido> createState() => _ContenidoState();
@@ -27,10 +29,10 @@ class _ContenidoState extends State<Contenido>{
 
   @override
   void initState() {
+     _conexion.getalumnoData(widget.token);
     super.initState();
-    _conexion.getalumnoData();
-    _conexion.fetchVideo(widget.id_subtema);
-    _conexion.fetchInfografia(widget.id_subtema);
+    _conexion.fetchVideo(widget.id_subtema, widget.token);
+    _conexion.fetchInfografia(widget.id_subtema, widget.token);
     Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
@@ -78,7 +80,11 @@ class _ContenidoState extends State<Contenido>{
                           Navigator.push( 
                           context,
                           ScaleTransition5(
-                             InfografiaScreen(titulo: widget.titulo, id_subtema: widget.id_subtema,),
+                             InfografiaScreen(
+                              titulo: widget.titulo,
+                              id_subtema: widget.id_subtema,
+                              token: widget.token,
+                              ),
                           ),
                         );
                        },
@@ -145,7 +151,11 @@ class _ContenidoState extends State<Contenido>{
                           Navigator.push( 
                           context,
                           ScaleTransition5(
-                           VideoScreen(titulo: widget.titulo, id_subtema:widget.id_subtema),
+                           VideoScreen(
+                            titulo: widget.titulo,
+                            id_subtema:widget.id_subtema,
+                            token: widget.token,
+                            ),
                           ),
                         );
                        },

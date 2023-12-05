@@ -3,39 +3,89 @@ import 'package:flutter/material.dart';
 import '../../../../api/conexion.dart';
 import '../../../../constants.dart';
 import '../../../../utils/app_text_styles.dart';
+import 'editContrasena.dart';
+import 'editCorreo.dart';
+import 'editTelefono.dart';
 
-class VerificarClave extends StatefulWidget {
- final String correo;
+
+class VerificarContrasena extends StatefulWidget {
+ final String? correo;
+ final String? telefono;
+ final String? contrasena;
  final String token;
-   const VerificarClave({
+ final String foto;
+ final String matricula;
+   const VerificarContrasena({
         Key? key,
         required this.correo,
-        required this.token
+        required this.telefono,
+        required this.contrasena,
+        required this.token,
+        required this.foto,
+        required this.matricula,
       }): super (key: key);
 
   @override
-  State<VerificarClave> createState() => _VerificarClaveState();
+  State<VerificarContrasena> createState() => _VerificarContrasenaState();
 }
 
-class _VerificarClaveState extends State<VerificarClave> {
-  final TextEditingController _clave = TextEditingController();
+class _VerificarContrasenaState extends State<VerificarContrasena> {
+  final TextEditingController _contrasenaController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Conexion _conexion =Conexion();
   bool _isLoading = false;
+  Widget? pages; 
   //bool isAnimating = false;
+  //Funcion que valida los datos ante un caracter malisioso
+  bool validarEntrada(String entrada){
+    List<String> caracteresMaliciosos =["'", ";", "--", "/* ", "%", "=", "*", "/"];
+    return caracteresMaliciosos.any((caracter) => entrada.contains(caracter));
+  }
 
   @override
   void initState() {
     super.initState();
   }
-  void _sendClave() async {
+  void _sendClave(String _contrasena) async {
     if (_formKey.currentState!.validate()) {
       //Mostrar un indicador al realizar la consulta
         setState(() {
           _isLoading = true;
+          //Indicamos si el valor que recibe no es un correo nulo podra navegar a esta vista
+          if(widget.correo != null){
+            pages = EditCorreo(correo: widget.correo!,
+            matricula: widget.matricula,
+            token:widget.token,
+            foto: widget.foto,
+            );
+          }
+          //Indicamos si el valor que recibe no es un teléfono nulo podra navegar a esta vista
+          if(widget.telefono != null){
+            pages = EditTelefono(
+              telefono: widget.telefono!,
+              matricula: widget.matricula,
+              token:widget.token,
+              foto:widget.foto,
+              );
+          }
+          //Indicamos si el valor que recibe no es una contraseña nula podra navegar a esta vista
+          if(widget.contrasena != null){
+            pages = EditContrasena(
+              contrasena: widget.contrasena!,
+              matricula: widget.matricula,
+              token: widget.token,
+              foto: widget.foto,
+              );
+
+          }
         });
       // Verificar la clave ingresada
-      await _conexion.verificarClave(context, widget.correo, _clave.text, widget.token);
+      await _conexion.verificarContrasena(
+       widget.matricula,
+       _contrasena, context,
+       pages!,
+       widget.token
+      );
       //Ocultamos el indicador 
           setState(() {
             _isLoading = false;
@@ -44,7 +94,7 @@ class _VerificarClaveState extends State<VerificarClave> {
        Future.delayed(
          const Duration(microseconds: 900),
          (){
-          _clave.clear();
+          _contrasenaController.clear();
          }
        );
       
@@ -73,7 +123,7 @@ class _VerificarClaveState extends State<VerificarClave> {
                     ), // Indicador de carga
                 const SizedBox(height: 20),
                 Text(
-                      'Validadndo clave...',
+                      'Verificando contraseña...',
                       style: AppTextStyles.bodyLightGrey15,
                   ), // Mensaje de cierre de sesión
                 ],
@@ -91,13 +141,13 @@ class _VerificarClaveState extends State<VerificarClave> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                    Container(
-                    width: 155,
-                    height: 155,
+                    width: 80,
+                    height: 80,
                     child: const CircleAvatar(
                       backgroundColor: blanco,
-                      radius: 50.0,
-                      child: Icon(Icons.password_rounded,
-                                  size: 60.0,
+                      radius: 10.0,
+                      child: Icon(Icons.lock,
+                                  size: 40.0,
                                   color:azul_oscuro,
                                   ),
                     )
@@ -106,7 +156,7 @@ class _VerificarClaveState extends State<VerificarClave> {
                  const SizedBox(height: 16.0),
 
                   const Text(
-                    "Introduce la clave que recibiste en tu correo",
+                    "Para poder continuar primero debes verificar tu identidad",
                     style: TextStyle(
                         color: blanco, fontFamily:
                          "Poppins", fontSize: 18,
@@ -117,15 +167,18 @@ class _VerificarClaveState extends State<VerificarClave> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 16),
                     child: TextFormField(
-                      textAlign: TextAlign.center,
-                      controller: _clave,
+                      obscureText: true,
+                      controller: _contrasenaController,
                       cursorColor: blanco,
                       style: const TextStyle(color: blanco),
-                      keyboardType: TextInputType.number,
-                      maxLength: 6,
+                      keyboardType: TextInputType.text,
+                      maxLength: 18,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "Por favor, ingrese la clave.";
+                        }if(validarEntrada(value)){
+                         return "Algun caracter ingresado es inválido";
+
                         }
                         return null;
                       },
@@ -138,7 +191,8 @@ class _VerificarClaveState extends State<VerificarClave> {
                           borderSide: BorderSide(color: blanco)
                         ),
                         counterStyle: TextStyle(color: blanco),
-                        prefixIcon: Icon(Icons.key_sharp, color: blanco),
+                        prefixIcon: Icon(Icons.lock_outline, color: blanco),
+                        counterText: ''
                       ),
                     ),
                   ),
@@ -146,7 +200,7 @@ class _VerificarClaveState extends State<VerificarClave> {
                     padding:const EdgeInsets.only(top: 12, bottom: 0),
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        _sendClave();
+                        _sendClave(_contrasenaController.text);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: blanco,
@@ -165,7 +219,7 @@ class _VerificarClaveState extends State<VerificarClave> {
                         color: azul,
                       ),
                       label: const Text(
-                        "Verificar Clave",
+                        "Verificar Contraseña",
                         style: TextStyle(color: azul, fontFamily: "Poppins"),
                       ),
                     ),
@@ -188,6 +242,33 @@ class _VerificarClaveState extends State<VerificarClave> {
               },
             ),
           ),
+           const Positioned(
+            top: 55,
+            right: 135,
+            child: Text(
+              "Cuenta de EduSmart",
+              style: TextStyle(
+                  color: blanco,
+                  fontFamily: "Poppins",
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            )),
+             Positioned(
+              top: 40,
+              right: 10,
+              child:GestureDetector(
+                        onTap: (){
+                         
+                        },
+                        child: Container(
+                        margin:const EdgeInsets.only(top: 5, right: 16, bottom: 5),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              '${_conexion.ip}/get-image/${widget.foto}'),
+                        ),
+                      ),
+                      )
+                    )
         ],
       ),
     ) 

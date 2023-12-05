@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../constants.dart';
 import '../../../../utils/app_colors.dart';
 
 
@@ -25,6 +26,15 @@ class NextButtonWidget extends StatelessWidget {
   })   : backgroundColor = AppColors.limon,
         this.fontColor = AppColors.white,
         this.borderColor = AppColors.limonClaro,
+        this.onTap = onTap,
+        label = label;
+
+    NextButtonWidget.blue({super.key, 
+    required String label,
+    required VoidCallback onTap,
+  })   : backgroundColor = azul,
+        this.fontColor = AppColors.white,
+        this.borderColor = azul,
         this.onTap = onTap,
         label = label;
 

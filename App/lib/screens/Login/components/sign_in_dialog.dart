@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'sign_in_form_docente.dart';
 import 'sign_in_form_alumno.dart';
-void showCustomDialog(BuildContext context, {required ValueChanged onValue}) {
+void showCustomDialog(BuildContext context, {required ValueChanged onValue, required ValueChanged<bool> intentos
+ }) {
    int selectIndex =0;
   showGeneralDialog(
     context: context,
@@ -27,7 +28,7 @@ void showCustomDialog(BuildContext context, {required ValueChanged onValue}) {
               BoxShadow(
                 color: Colors.black.withOpacity(0.3),
                 offset: const Offset(0, 30),
-                blurRadius: 60,
+                blurRadius: 50,
               ),
               const BoxShadow(
                 color: Colors.black45,
@@ -86,20 +87,21 @@ void showCustomDialog(BuildContext context, {required ValueChanged onValue}) {
                    //Formulario alumno.
                     Visibility(
                       visible: selectIndex==0,
-                        child:const  SignInForm() ,
-                      )
+                        child: SignInForm(onTapIntentos: intentos,
+                      ),
+                    )
                   ],
                 ),
                 const Positioned(
                   left: 0,
                   right: 0,
-                  bottom: -48,
+                  top: -49,
                   child: CircleAvatar(
                     radius: 16,
                     backgroundColor: Colors.white,
                     child: Icon(
                       Icons.close,
-                      size: 20,
+                      size: 24,
                       color: Colors.black,
                     ),
                   ),

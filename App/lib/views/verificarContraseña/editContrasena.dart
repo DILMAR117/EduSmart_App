@@ -5,20 +5,24 @@ import '../../../../api/message.dart';
 import '../../../../constants.dart';
 import '../../../../utils/app_text_styles.dart';
 
-class NuevaContrasena extends StatefulWidget {
-  final String correo;
+class EditContrasena extends StatefulWidget {
+   final String contrasena;
+  final String matricula;
   final String token;
-  const NuevaContrasena({
+  final String foto;
+  const EditContrasena({
     Key? key,
-    required this.correo,
+    required this.contrasena,
+    required this.matricula,
     required this.token,
+    required this.foto,
   }) : super(key: key);
 
   @override
-  State<NuevaContrasena> createState() => _NuevaContrasenaState();
+  State<EditContrasena> createState() => _EditContrasenaState();
 }
 
-class _NuevaContrasenaState extends State<NuevaContrasena> {
+class _EditContrasenaState extends State<EditContrasena> {
   final TextEditingController _contrasena = TextEditingController();
   final TextEditingController _contrasenafinal = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -52,8 +56,13 @@ class _NuevaContrasenaState extends State<NuevaContrasena> {
         _isLoading = true;
       });
       // Restablecer la contraseña
-      await _conexion.restabelcerContrasena(
-          context, _contrasenafinal.text, widget.correo, widget.token
+      await _conexion.editarDatos(
+         widget.matricula,
+         null,
+         null,
+         _contrasenafinal.text,
+         context,
+         widget.token
           );
       //Ocultamos el indicador
       setState(() {
@@ -98,7 +107,7 @@ class _NuevaContrasenaState extends State<NuevaContrasena> {
                         ), // Indicador de carga
                         const SizedBox(height: 20),
                         Text(
-                          'Guardando contraseña nueva...',
+                          'Actualizando contraseña...',
                           style: AppTextStyles.bodyLightGrey15,
                         ), // Mensaje de cierre de sesión
                       ],
@@ -117,14 +126,14 @@ class _NuevaContrasenaState extends State<NuevaContrasena> {
                         Center(
                           child: Container(
                               alignment: null,
-                              width: 140,
-                              height: 155,
+                              width: 80,
+                              height: 80,
                               child: const CircleAvatar(
-                                backgroundColor: blanco,
+                                backgroundColor: Colors.grey,
                                 radius: 50.0,
                                 child: Icon(
-                                  Icons.lock_person,
-                                  size: 60.0,
+                                  Icons.lock_open_rounded,
+                                  size: 40.0,
                                   color: azul_oscuro,
                                 ),
                               )),
@@ -210,7 +219,7 @@ class _NuevaContrasenaState extends State<NuevaContrasena> {
                                   obscureText: !this._verPassword2,
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return "Por favor, ingrese una contraseña";
+                                      return "Por favor, ingrese su contraseña anterior";
                                     } else if (value != _contrasena.text) {
                                       return "La contraseña no coincide con la contraseña anterior";
                                     }
@@ -329,7 +338,7 @@ class _NuevaContrasenaState extends State<NuevaContrasena> {
                                     color: azul,
                                   ),
                                   label: const Text(
-                                    "Restablecer Contraseña",
+                                    "Actualizar Contraseña",
                                     style: TextStyle(
                                         color: azul, fontFamily: "Poppins"),
                                   ),
@@ -353,6 +362,33 @@ class _NuevaContrasenaState extends State<NuevaContrasena> {
                 },
               ),
             ),
+              const Positioned(
+            top: 55,
+            right: 135,
+            child: Text(
+              "Cuenta de EduSmart",
+              style: TextStyle(
+                  color: blanco,
+                  fontFamily: "Poppins",
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            )),
+             Positioned(
+              top: 40,
+              right: 10,
+              child:GestureDetector(
+                        onTap: (){
+                         
+                        },
+                        child: Container(
+                        margin:const EdgeInsets.only(top: 5, right: 16, bottom: 5),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                              '${_conexion.ip}/get-image/${widget.foto}'),
+                        ),
+                      ),
+                      )
+              )
           ],
         ),
       ),

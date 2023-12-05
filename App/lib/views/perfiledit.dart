@@ -7,7 +7,9 @@ import '../constants.dart';
 
 class PerfilEdit extends StatefulWidget {
   const PerfilEdit({
+    required this.token,
     super.key});
+  final String token;
 
   @override
   State<PerfilEdit> createState() => _PerfilEdiState();
@@ -15,11 +17,9 @@ class PerfilEdit extends StatefulWidget {
 
 class _PerfilEdiState extends State<PerfilEdit> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _correoController = TextEditingController();
   TextEditingController _nombreController = TextEditingController();
   TextEditingController _appController = TextEditingController();
   TextEditingController _apmController = TextEditingController();
-  TextEditingController _telefonoController = TextEditingController();
   bool _alertas = false;
   // ignore: non_constant_identifier_names
   int _id_alumno = 0;
@@ -34,19 +34,16 @@ class _PerfilEdiState extends State<PerfilEdit> {
   @override
   void initState() {
     super.initState();
-    _conexion.getalumnoData();
-
+     _conexion.getalumnoData(widget.token);
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         isLoading = false;
         //Guardar la URL de la foto actual.
         _id_alumno = _conexion.userData!['id_alumno'];
         matricula = _conexion.userData!['matricula'];
-        _correoController.text = _conexion.userData!['correo'];
         _nombreController.text = _conexion.userData!['nombre'];
         _appController.text = _conexion.userData!['app'];
         _apmController.text = _conexion.userData!['apm'];
-        _telefonoController.text =_conexion.userData!['telefono'];
         foto = _conexion.userData!["foto"];
 
       });
@@ -61,15 +58,15 @@ class _PerfilEdiState extends State<PerfilEdit> {
     // Esperar unos segundos antes de redirigir al usuario
     // Validación exitosa, enviar la solicitud PUT para actualizar los datos del alumno.
     await _conexion.actualizarDatosAlumno(
-        _telefonoController.text,
-        _correoController.text,
         _nombreController.text,
         _appController.text,
         _apmController.text,
         _id_alumno,
-        context);
+        context,
+        widget.token
+        );
         if(_image  != null){
-          _conexion.uploadImage(_image!, matricula);
+          _conexion.uploadImage(_image!, matricula, widget.token);
         }else{
          print("No se selecciono ni una foto");
         }
@@ -175,7 +172,7 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                     ? Center(child: CircleAvatar(
                                       radius: 60.0,
                                       backgroundImage: NetworkImage(
-                                          'http://${_conexion.ip}/get-image/${_conexion.userData!['foto']}'), // Replace with your image path
+                                          '${_conexion.ip}/get-image/${_conexion.userData!['foto']}'), // Replace with your image path
                                     )
                                     ):
                                     Center(
@@ -292,7 +289,7 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                           )),
                                     ),
                                     //Campo email
-                                    const Text(
+                                   /* const Text(
                                         "Correo electrónico",
                                         style: TextStyle(
                                             color: blanco,
@@ -330,9 +327,9 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                                   UnderlineInputBorder(
                                                       borderSide: BorderSide(
                                                           color: blanco)),
-                                            ))),
+                                            ))),*/
                                     //Campo Teléfono
-                                    const Text(
+                                    /*const Text(
                                         "Teléfono",
                                         style: TextStyle(
                                             color: blanco,
@@ -368,7 +365,7 @@ class _PerfilEdiState extends State<PerfilEdit> {
                                               counterStyle: TextStyle(
                                                 color: blanco
                                               )
-                                            ))),
+                                            ))),*/
                                     Container(
                                         padding: const EdgeInsets.only(
                                             top: 30, left: 50, right: 50),

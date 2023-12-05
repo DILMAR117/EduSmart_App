@@ -11,10 +11,13 @@ class UnidadesMenu extends StatefulWidget {
   const UnidadesMenu({super.key,
    required this.titulo,
   required this.id_materia,
+  required this.token,
+
   });
   //final List<Subtema> subtemas;
   final String titulo;
   final int id_materia;
+  final String token;
  
   
 
@@ -87,7 +90,7 @@ class _UnidadesMenuState extends State<UnidadesMenu>
                   borderRadius:const  BorderRadius.all(
                     Radius.circular(24),
                   ),
-                  child: UnidadPage(titulo: widget.titulo, id_materia: widget.id_materia), 
+                  child: UnidadPage(titulo: widget.titulo, id_materia: widget.id_materia, token: widget.token), 
                 ),
               ),
             ),

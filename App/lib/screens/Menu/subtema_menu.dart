@@ -12,11 +12,13 @@ class SubtemaMenu extends StatefulWidget {
    required this.id_tema,
    required this.idMateria,
    required this.materia,
+   required this.token,
    });
   final String titulo;
   final int id_tema;
   final int idMateria;
   final String materia;
+  final String token;
 
   @override
   State<SubtemaMenu> createState() => _SubtemaMenuState();
@@ -87,7 +89,7 @@ class _SubtemaMenuState extends State<SubtemaMenu>
                   borderRadius:const  BorderRadius.all(
                     Radius.circular(24),
                   ),
-                  child: SubtemaPage(titulo: widget.titulo, id_tema: widget.id_tema,), 
+                  child: SubtemaPage(titulo: widget.titulo, id_tema: widget.id_tema, token: widget.token), 
                 ),
               ),
             ),

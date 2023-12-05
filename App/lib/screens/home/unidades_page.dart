@@ -6,9 +6,15 @@ import '../appbar/appbar_widget.dart';
 import 'widgets/tema.dart';
 
 class UnidadPage extends StatefulWidget {
-  UnidadPage({super.key, required this.titulo, required this.id_materia});
+  UnidadPage({
+    super.key,
+    required this.titulo,
+    required this.id_materia,
+    required this.token,
+    });
   String titulo;
   int id_materia;
+  final String token;
   
 
   @override
@@ -21,9 +27,10 @@ class _UnidadPageState extends State<UnidadPage> {
 
   @override
   void initState() {
+     _conexion.getalumnoData(widget.token);
     super.initState();
-    _conexion.fetchUnidades(widget.id_materia);
-    _conexion.getalumnoData();
+    _conexion.fetchUnidades(widget.id_materia, widget.token);
+   
     Future.delayed(const Duration(milliseconds : 800), () {
       setState(() {
         isLoading = false;
@@ -164,7 +171,8 @@ class _UnidadPageState extends State<UnidadPage> {
                                   ),
                                 ),
                                 // Mostramos los temas de la unidad
-                                TemaScreen(id_unidad: unidad["id_unidad"], idmateria: widget.id_materia, materia: widget.titulo,),
+                                TemaScreen(id_unidad: unidad["id_unidad"], idmateria: widget.id_materia, materia: widget.titulo,
+                                token:widget.token),
                               ],
                             ),
                           ),

@@ -15,6 +15,7 @@ class ResultPage extends StatefulWidget {
   final int id_examen;
   final int id_materia;
   final String tipo_examen;
+  final String token;
 
   const ResultPage({
     Key? key,
@@ -24,7 +25,8 @@ class ResultPage extends StatefulWidget {
     required this.id_alumno,
     required this.id_examen,
     required this.id_materia,
-    required this.tipo_examen
+    required this.tipo_examen,
+    required this.token,
   }) : super(key: key);
 
   @override
@@ -43,7 +45,7 @@ class _ResultPageState extends State<ResultPage>{
   @override
   void initState() {
     super.initState();
-    _conexion.fetchRespuestas(widget.id_alumno, widget.id_materia, context);
+    _conexion.fetchRespuestas(widget.id_alumno, widget.id_materia, context, widget.token);
  
 
     Future.delayed(const Duration(seconds: 2),(){
@@ -86,7 +88,7 @@ class _ResultPageState extends State<ResultPage>{
   //Guardamos los datos de acuerdo al tipo de examen que se publica
    void guardarGamificacion(double puntajes, String tipoexamen){
      if(tipoexamen == 'Individual'){
-          _conexion.enviarGamificacion(widget.id_examen,widget.id_alumno, widget.id_materia, puntajes);
+          _conexion.enviarGamificacion(widget.id_examen,widget.id_alumno, widget.id_materia, puntajes,widget.token);
      }else if(tipoexamen== 'Equipo'){
        print('Gamificacion equipo');
 

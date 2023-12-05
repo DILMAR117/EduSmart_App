@@ -13,8 +13,10 @@ import 'resetpassword/enviar_email.dart';
 import 'package:http/http.dart' as http;
 
 class SignInForm extends StatefulWidget {
+ final ValueChanged<bool> onTapIntentos;
   const SignInForm({
     Key? key,
+    required this.onTapIntentos
   }) : super(key: key);
 
   @override
@@ -34,7 +36,21 @@ class _SignInFormState extends State<SignInForm> {
   late SMITrigger reset;
 
   late SMITrigger confetti;
-
+  int _intentos = 0;
+  final int _maxIntentos = 3;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _obtenrintentos();
+  }
+  _obtenrintentos()async {
+    await _conexion.getLoginIntentos();
+    setState((){
+      _intentos = _conexion.intentos!;
+    });
+    
+  }
   void _onCheckRiveInit(Artboard artboard) {
     StateMachineController? controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
@@ -59,7 +75,7 @@ class _SignInFormState extends State<SignInForm> {
   }
   //Función para el inicio de sesión
   Future<void> _login(BuildContext context) async {
-    String url = 'http://${_conexion.ip}/login';
+    String url = '${_conexion.ip}/login';
     setState(() {
       isShowConfetti = true;
       isShowLoading = true;
@@ -67,7 +83,9 @@ class _SignInFormState extends State<SignInForm> {
     try {
       Future.delayed(const Duration(seconds: 1), ()async {
         if (_formKey.currentState!.validate()) {
+          print('enlace del edpoint: $url');
 
+            try{
            final response = await http.post(
               Uri.parse(url),
               body: jsonEncode({
@@ -77,6 +95,9 @@ class _SignInFormState extends State<SignInForm> {
               headers: {'Content-Type': 'application/json'},
             );
           if (response.statusCode == 200) {
+            //Obtenemos el token en la respuesta de la solicitud
+           final Map<String, dynamic> data = json.decode(response.body);
+           final String token = data['token'];
           // Éxito en la autenticación.
           success.fire();
           Future.delayed(
@@ -99,11 +120,26 @@ class _SignInFormState extends State<SignInForm> {
               });
             },
           );
+          //Restablcecer el contador de inicio de sesión
+            setState((){
+              _conexion.deleteLoginIntentos();
+           });
+        
           final matrucula = _matriculaController.text.trim();
           _conexion.saveUserData(matrucula);
+           _conexion.saveToken(token);
+           //print('Token obtenido:'+ token);
+         
           //print('Autenticación exitosa');
-          } else if (response.statusCode == 401) {
-              // Credenciales incorrectas.      
+          } else if (response.statusCode == 401 || response.statusCode == 404) {
+              // Credenciales incorrectas. 
+              //Sumar número de intentos de inicio de sesión
+              setState(() { 
+                _intentos++;
+                _bloquear();
+                widget.onTapIntentos(true);
+              });
+                _conexion.saveLoginIntentos(_intentos);
               error.fire();
               Future.delayed(
                 const Duration(seconds: 2),
@@ -122,24 +158,6 @@ class _SignInFormState extends State<SignInForm> {
               );
 
               //print('Credenciales incorrectas');
-            } else if(response.statusCode == 404) {
-              // Error en el servidor.
-              error.fire();
-              Future.delayed(
-                const Duration(seconds: 2),
-                () {
-                  setState(() {
-                    isShowLoading = false;
-                  });
-                  reset.fire();
-                  _message.mostrarBottomSheet(context,
-                   "Error",
-                   "Matrícula no encontrada",
-                   Colors.red
-                   );
-                },
-              );
-              //print('Error interno del servidor');
             }else{
               error.fire();
               Future.delayed(
@@ -153,6 +171,12 @@ class _SignInFormState extends State<SignInForm> {
               );
 
             }
+            }catch(e){
+               _message.mostrarBottomSheet(context,
+                   "Error",
+                   "Error de conexión: $e",
+                   Colors.red);
+            }  
           
         }else{
           error.fire();
@@ -185,6 +209,17 @@ class _SignInFormState extends State<SignInForm> {
               );
     }
   }
+  void _bloquear(){
+      //Metodo para bloquer el bóton el número de intentos en el inicio de sesión
+        if(_intentos >= _maxIntentos){
+             Navigator.pop(context);
+          _message.mostrarBottomSheet(context, "Alerta",
+          'Por seguridad, el botón de inicio de sesión ha sido temporalmente desactivado debido a múltiples intentos fallidos. '
+          'Se habilitará de manera automatica despúes de 5 horas. Verifica tu información de inicio de sesión y espera para volver a intentarlo',
+            kred);
+        }
+    }
+
 //Cuerpo del login
   @override
   Widget build(BuildContext context) {
@@ -197,7 +232,7 @@ class _SignInFormState extends State<SignInForm> {
             children: [
               //Campo Matricula
               const Text(
-                "Matricula",
+                "Matrícula",
                 style: TextStyle(
                   color: Colors.black54,
                 ),
@@ -207,6 +242,7 @@ class _SignInFormState extends State<SignInForm> {
                 child: TextFormField(
                    key: const Key('username'),
                   controller: _matriculaController,
+                  maxLength: 12,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return "Por favor, ingrese una matricula";
@@ -221,6 +257,7 @@ class _SignInFormState extends State<SignInForm> {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: SvgPicture.asset("assets/icons/user-graduat.svg"),
                     ),
+                    counterText: ''
                   ),
                 ),
               ),
@@ -236,6 +273,7 @@ class _SignInFormState extends State<SignInForm> {
                 child: TextFormField(
                    key: const Key('password'),
                   controller: _contrasenaController,
+                  maxLength: 18,
                   obscureText: true,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -252,6 +290,7 @@ class _SignInFormState extends State<SignInForm> {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: SvgPicture.asset("assets/icons/lock-solid.svg"),
                     ),
+                    counterText: ''
                   ),
                 ),
               ),
@@ -264,7 +303,7 @@ class _SignInFormState extends State<SignInForm> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: azul,
-                    minimumSize: const Size(double.infinity, 56),
+                    minimumSize: const Size(double.infinity,45),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),

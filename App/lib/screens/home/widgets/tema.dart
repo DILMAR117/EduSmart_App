@@ -7,12 +7,15 @@ class TemaScreen extends StatefulWidget {
 const TemaScreen({super.key,
  required this.id_unidad,
  required this.idmateria,
- required this.materia
+ required this.materia,
+ required this.token,
+
 
  });
   final int id_unidad;
   final int idmateria;
   final String materia;
+  final String token;
   @override
   State<TemaScreen> createState() => _TemaScreenState();
 }
@@ -22,7 +25,7 @@ class _TemaScreenState extends State<TemaScreen>{
   @override
   void initState(){
     super.initState();
-    _conexion.fetchTemas(widget.id_unidad);
+    _conexion.fetchTemas(widget.id_unidad, widget.token);
      Future.delayed(const Duration(milliseconds: 800), () {
     setState(() {
       isLoading = false; 
@@ -66,7 +69,7 @@ class _TemaScreenState extends State<TemaScreen>{
               Navigator.push(
               context,
               ScaleTransition5(
-               SubtemaMenu(titulo: titulo, id_tema: temas["id_tema"], idMateria: widget.idmateria, materia: widget.materia),
+               SubtemaMenu(titulo: titulo, id_tema: temas["id_tema"], idMateria: widget.idmateria, materia: widget.materia, token: widget.token),
               ),
               );
             },

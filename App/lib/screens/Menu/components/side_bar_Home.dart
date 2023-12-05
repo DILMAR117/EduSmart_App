@@ -1,6 +1,7 @@
 import 'package:edusmart/constants.dart';
 import 'package:edusmart/utils/transition.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/conexion.dart';
 import '../../../model/menu.dart';
 import '../../../utils/rive_utils.dart';
@@ -19,16 +20,27 @@ class _SideBarHomeState extends State<SideBarHome> {
   bool isLoading= true;
   final Conexion _conexion = Conexion();
   Menu selectedSideMenu= home[0];
-
+  String? _token;
+ 
   @override
   void initState(){
+    _obtenerToken();
     super.initState();
-    _conexion.getalumnoData();
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 2), () {
         setState(() {
          isLoading = false;
         });
     });
+    
+  }
+  Future<void> _obtenerToken()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    setState(() {
+      _token = token;
+      _conexion.getalumnoData(_token!);
+    });  
     
   }
 

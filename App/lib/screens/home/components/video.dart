@@ -12,9 +12,11 @@ class VerVideo extends StatefulWidget {
     Key? key,
     required this.filePath,
     required this.titulo,
+    required this.token
   }) : super(key: key);
   final String filePath;
   final String titulo;
+  final String token;
   @override
   _VerVideo createState() => _VerVideo();
 }
@@ -28,9 +30,9 @@ class _VerVideo extends State<VerVideo> {
 
   @override
   void initState() {
+    _conexion.getalumnoData(widget.token);
     super.initState();
     _txtController.text = widget.filePath;
-    _conexion.getalumnoData();
     _getVideoId();
     Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
@@ -147,10 +149,15 @@ class _VerVideo extends State<VerVideo> {
 }
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen({Key? key, required this.titulo, required this.id_subtema})
+  const VideoScreen({Key? key,
+   required this.titulo,
+   required this.id_subtema,
+   required this.token
+    })
       : super(key: key);
   final String titulo;
   final int id_subtema;
+  final String token;
   @override
   State<VideoScreen> createState() => _VideoScreenState();
 }
@@ -161,9 +168,9 @@ class _VideoScreenState extends State<VideoScreen> {
 
   @override
   void initState() {
+     _conexion.getalumnoData(widget.token);
     super.initState();
-    _conexion.fetchVideo(widget.id_subtema);
-    _conexion.getalumnoData();
+    _conexion.fetchVideo(widget.id_subtema, widget.token);
     Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
@@ -248,6 +255,7 @@ class _VideoScreenState extends State<VideoScreen> {
                                          VerVideo(
                                           filePath: videos["url"],
                                           titulo: titulo,
+                                          token: widget.token,
                                         ),
                                       ),
                                     );

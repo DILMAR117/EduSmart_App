@@ -9,10 +9,13 @@ class SubtemaScreen extends StatefulWidget {
   const SubtemaScreen(
       {Key? key,
       required this.titulo,
-      required this.id_tema})
+      required this.id_tema,
+      required this.token
+      })
       : super(key: key);
   final String titulo;
   final int id_tema;
+  final String token;
   @override
   State<SubtemaScreen> createState() => _SubtemaScreenState();
 }
@@ -23,7 +26,7 @@ class _SubtemaScreenState extends State<SubtemaScreen> {
   @override
   void initState() {
     super.initState();
-    _conexion.fetchSubtemas(widget.id_tema);
+    _conexion.fetchSubtemas(widget.id_tema, widget.token);
     Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
         isLoading = false;
@@ -73,6 +76,7 @@ class _SubtemaScreenState extends State<SubtemaScreen> {
                           ScaleTransition5( Contenido(
                             titulo: titulo, id_subtema: subtema["id_subtema"],
                             lenght: _conexion.subtemas.length, 
+                            token: widget.token,
                           ),
                           
                         ),

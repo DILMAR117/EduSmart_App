@@ -1,6 +1,7 @@
 import 'package:edusmart/constants.dart';
 import 'package:edusmart/utils/transition.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/conexion.dart';
 import '../../../model/menu.dart';
 import '../../../utils/rive_utils.dart';
@@ -29,12 +30,12 @@ class _SideBarState extends State<SideBar> {
   bool isEnabled = true;
   int idalumno =0;
   int idExamen =0;
+  String? _token;
   
   @override
   void initState(){
-    _conexion.fetchExamenActivo(widget.idmateria);
+    _obtenerToken();
     super.initState();
-    _conexion.getalumnoData();
     toggleButton();
 
     Future.delayed(const Duration(milliseconds: 900), () {
@@ -44,7 +45,7 @@ class _SideBarState extends State<SideBar> {
          //Le pasamos el valor coparando el estado en el que se encuetra, para habilitar el bóton de exámen
          isEnabled = (_conexion.activo[0]['activo'] == 'true') ? true : false;
          Future.delayed(const Duration(milliseconds: 1000),(){
-           _conexion.fetchIdExamen(widget.idmateria, idalumno);
+           _conexion.fetchIdExamen(widget.idmateria, idalumno, _token!);
            Future.delayed(const Duration(milliseconds: 1100),(){
            //Le pasamos el id del examen
            setState(() {
@@ -55,6 +56,18 @@ class _SideBarState extends State<SideBar> {
          });
         });
     });
+    
+  }
+  //Función para poder obtener el token almacenado
+  Future<void> _obtenerToken()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    setState(() {
+      _token = token;
+      _conexion.getalumnoData(_token!);
+       _conexion.fetchExamenActivo(widget.idmateria, _token!);
+    });  
     
   }
 
@@ -128,7 +141,7 @@ class _SideBarState extends State<SideBar> {
                  width: 200,
                   child: ElevatedButton(
                     onPressed: isEnabled ? () {
-                        final SizeTransition5 _transition =SizeTransition5(QuizzPage(idalumno: idalumno, idmateria: widget.idmateria));
+                        final SizeTransition5 _transition =SizeTransition5(QuizzPage(idalumno: idalumno, idmateria: widget.idmateria, token: _token!,));
                         Navigator.push(context, _transition);
                     } : null,
                     child:  Text('Examen',
@@ -225,7 +238,8 @@ class _SideBarState extends State<SideBar> {
                             final SizeTransition5 transition5 = SizeTransition5(Ranking(idMateria: widget.idmateria,
                                 idAlumno: idalumno,
                                 materia: widget.tituloMateria,
-                                idExamen: idExamen
+                                idExamen: idExamen,
+                                token: _token!,
                                 ));
                             menu.idmateria(widget.idmateria);
                             Future.delayed(const Duration(seconds: 2),(){

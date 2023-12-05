@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:edusmart/api/conexion.dart';
-import 'package:edusmart/screens/Login/components/resetpassword/enviar_email.dart';
+//import 'package:edusmart/screens/Login/components/resetpassword/enviar_email.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rive/rive.dart';
 import '../../../constants.dart';
-import '../../../utils/transition.dart';
 import '../../Menu/entry_point.dart';
 import 'package:http/http.dart' as http;
 
@@ -262,11 +261,11 @@ class _SignInFormDocenteState extends State<SignInFormDocente> {
                 padding: const EdgeInsets.only(top: 12, bottom: 0),
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    _login(context);
+                    //_login(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: azul,
-                    minimumSize: const Size(double.infinity, 56),
+                    minimumSize: const Size(double.infinity, 45),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),
@@ -280,7 +279,7 @@ class _SignInFormDocenteState extends State<SignInFormDocente> {
                     CupertinoIcons.arrow_right,
                     color: blanco,
                   ),
-                  label: const Text("Iniciar Sesión"),
+                  label: const Text("Proximamente"),
                 ),
               ),
                Padding(
@@ -288,8 +287,8 @@ class _SignInFormDocenteState extends State<SignInFormDocente> {
                 child: Center(
                   child:TextButton(
                       onPressed: () {  
-                        final SizeTransition5 _transition = SizeTransition5(ResetPassword());
-                          Navigator.push(context, _transition);
+                        //final SizeTransition5 _transition = SizeTransition5(ResetPassword());
+                         // Navigator.push(context, _transition);
                       },
                       child:const Text('Olvidé mi contraseña',
                       style: TextStyle(

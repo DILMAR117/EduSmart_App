@@ -23,7 +23,7 @@ class Message{
             const SizedBox(height: 10),
              Text(
               message,
-              style:  TextStyle(fontSize: 15, color: color, fontWeight: FontWeight.bold),
+              style:  TextStyle(fontSize: 15, color: color, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

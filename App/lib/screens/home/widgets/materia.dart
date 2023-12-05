@@ -1,11 +1,14 @@
 import 'package:edusmart/screens/Menu/unidades_menu.dart';
 import 'package:edusmart/utils/transition.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/conexion.dart';
 import '../../../utils/app_text_styles.dart';
 
 class MateriaScreen extends StatefulWidget {
-  const MateriaScreen({Key? key}) : super(key: key);
+  const MateriaScreen({Key? key,
+  }) : super(key: key);
+  
   @override
   State<MateriaScreen> createState() => _MateriaScreenState();
   }
@@ -14,26 +17,37 @@ class MateriaScreen extends StatefulWidget {
     bool isLoading= true;
     final Conexion _conexion = Conexion();
     int indexma =0;
+    String? _token;
      @override
     void initState() {
+      _obtenerToken();
       super.initState();
-      _conexion.getalumnoData();
         // _conexion.fetchMaterias();
-      Future.delayed(const Duration(milliseconds: 800), () {
+      Future.delayed(const Duration(milliseconds: 900), () {
           setState(() {
             isLoading = false; 
             }
           );
         }
-      );
+      ); 
     }
+   Future<void> _obtenerToken()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    setState(() {
+      _token = token;
+      _conexion.getalumnoData(_token!);
+    });  
+    
+  }
 
     //Refrescar el estado para volver a mostrar los datos
   Future<void> _refreshData() async {
     //Esperamos a una respuesta de las preguntas
     await Future.delayed(const Duration(seconds: 3),() {
         setState(() {
-           _conexion.getalumnoData();
+           _conexion.getalumnoData(_token!);
         });
        
     });
@@ -75,6 +89,7 @@ class MateriaScreen extends StatefulWidget {
                     ScaleTransition5(
                       UnidadesMenu(titulo: materia["nombre_materia"],
                       id_materia: materia["id_materia"],
+                      token: _token!,
                       )
                     )
                     /*MaterialPageRoute(
@@ -89,7 +104,8 @@ class MateriaScreen extends StatefulWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
                     image: DecorationImage(
-                        image: AssetImage("assets/box/${materia['img']}"),
+                        image:NetworkImage('${_conexion.urlImg}/${materia['img']}'),
+                         //AssetImage("assets/box/${materia['img']}"),
                         fit: BoxFit.fill
                     ),
                   ),

@@ -12,9 +12,11 @@ import 'widgets/quizzScreen/preguntas.dart';
 class QuizzPage extends StatefulWidget {
   int idalumno;
   final int idmateria;
+  final String token;
    QuizzPage({
     required this.idalumno,
     required this.idmateria,
+    required this.token,
     Key? key,
   }) : super(key: key);
 
@@ -42,7 +44,7 @@ class QuizzPageState extends State<QuizzPage> {
     });
 
     super.initState();
-    _conexion.fetchPregunta(widget.idalumno, widget.idmateria);
+    _conexion.fetchPregunta(widget.idalumno, widget.idmateria, widget.token);
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _isLoading = false;
@@ -62,10 +64,10 @@ class QuizzPageState extends State<QuizzPage> {
   }
   void guardarRespuesta(){
     if(respuesta != null){
-       _conexion.guardarRespuestas(id_pregunta!, _idalumno, _id_equipo, "$respuesta", context);
+       _conexion.guardarRespuestas(id_pregunta!, _idalumno, _id_equipo, "$respuesta", context, widget.token);
         respuesta = null;
     } else {
-         _conexion.guardarRespuestas(id_pregunta!,_idalumno, _id_equipo, "No se selecciono respuesta", context);
+         _conexion.guardarRespuestas(id_pregunta!,_idalumno, _id_equipo, "No se selecciono respuesta", context, widget.token);
     }
   }
  //Refrescar el estado para volver a mostrar los datos
@@ -76,7 +78,7 @@ class QuizzPageState extends State<QuizzPage> {
     });
     //Esperamos a una respuesta de las preguntas
     await Future.delayed(const Duration(seconds: 3),() {
-        _conexion.fetchPregunta(_idalumno, widget.idmateria);
+        _conexion.fetchPregunta(_idalumno, widget.idmateria, widget.token);
     });
     //Ocultar indicador de carga
     Future.delayed(const Duration(seconds: 2), () {
@@ -186,6 +188,7 @@ class QuizzPageState extends State<QuizzPage> {
                       onSelectRespuesta: onSelectRespuesta,
                       id_alumno: _idalumno,
                       idMateria: widget.idmateria,
+                      token: widget.token,
 
                     );
                   },
@@ -254,6 +257,7 @@ class QuizzPageState extends State<QuizzPage> {
                                             id_examen: id_examen,
                                             id_materia:id_materia,
                                             tipo_examen: tipoexamen,
+                                            token:widget.token
                                           ));
                               Navigator.pushReplacement(
                                   context, sizeTransition5
