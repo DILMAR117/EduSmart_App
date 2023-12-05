@@ -126,7 +126,7 @@ class _VerVideo extends State<VerVideo> {
                         margin:const EdgeInsets.only(top: 5, right: 16, bottom: 5),
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(
-                              'http://${_conexion.ip}/get-image/${_conexion.userData!['foto']}'),
+                              '${_conexion.ip}/get-image/${_conexion.userData!['foto']}'),
                         ),
                       ),
                       )

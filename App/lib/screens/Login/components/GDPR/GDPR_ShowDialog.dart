@@ -33,6 +33,40 @@ Nos reservamos el derecho de modificar esta Política de Privacidad en cualquier
 
 Para preguntas o inquietudes relacionadas con la privacidad, los usuarios pueden ponerse en contacto con nosotros a través de edusmartcodetech@gmail.com.
 
+**Términos y Condiciones de Uso**
+
+Estos Términos y Condiciones de Uso rigen el uso de la aplicación móvil EduSmart desarrollada por CodeTech. Al acceder y utilizar la App, aceptas estar legalmente vinculado por estos Términos.
+
+**Licencia de Uso**
+
+**1. Concesión de Licencia:** Se otorga una licencia limitada, no exclusiva, intransferible y revocable para descargar, instalar y utilizar la App con el propósito exclusivo de acceso a los servicios educativos proporcionados por la App.
+
+**2. Restricciones de Uso:** 
+
+  **No puedes:**
+  a. Copiar, modificar, o distribuir la App.
+  b. Intentar eludir cualquier medida de seguridad de la App.
+  c. Utilizar la App de manera que viole leyes aplicables o derechos de terceros.
+
+**Contenido Educativo**
+
+**1. Propiedad del Contenido:** Todo el contenido educativo proporcionado a través de la App es propiedad intelectual de la Institución, Docente o sus licenciantes y está protegido por leyes de propiedad intelectual.
+
+**2. Uso del Contenido:** Puedes utilizar el contenido educativo de la App para fines personales y educativos. Queda prohibida la reproducción o distribución no autorizada del contenido.
+
+**Privacidad**
+
+**1. Datos del Usuario:** Al utilizar la App, aceptas nuestra Política de Privacidad antes mencionada, que describe cómo recopilamos, utilizamos y compartimos tus datos.
+
+**Modificaciones y Terminación**
+
+**1. Modificaciones:** Nos reservamos el derecho de modificar estos Términos en cualquier momento. Las modificaciones entrarán en vigencia después de su publicación en la App.
+
+**2. Terminación:** Podemos terminar tu acceso a la App si violas estos Términos.
+
+**Ley Aplicable**
+
+Estos Términos se regirán e interpretarán de acuerdo con las leyes del País sin tener en cuenta sus principios de conflicto de leyes.
 
 Gracias por confiar en EduSmart para su aprendizaje. ¡Nos esforzamos por proporcionar una experiencia educativa segura y enriquecedora!
 
